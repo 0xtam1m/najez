@@ -3,13 +3,167 @@
   'use strict';
 
   var STORAGE_KEY = 'najez.entries';
-  var MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-                'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-  var WEEKDAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-  var AR_DATE = new Intl.DateTimeFormat('ar-u-ca-gregory-nu-latn',
-    { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  var AR_TIME = new Intl.DateTimeFormat('ar-u-ca-gregory-nu-latn',
-    { hour: '2-digit', minute: '2-digit' });
+  var LANG_KEY = 'najez.lang';
+
+  /* ===== الترجمة ===== */
+  var I18N = {
+    ar: {
+      dir: 'rtl',
+      htmlLang: 'ar',
+      locale: 'ar-u-ca-gregory-nu-latn',
+      title: 'ناجز — متابعة مهام العمل اليومية',
+      months: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+               'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+      monthsShort: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+      strings: {
+        brand: 'ناجز',
+        navToday: 'اليوم',
+        navAchievements: 'الإنجازات',
+        question: 'إيش اشتغلت عليه اليوم؟',
+        placeholder: 'اكتب مهمة اشتغلت عليها…',
+        add: 'أضف',
+        todayEmpty: 'ما سجّلت شي اليوم بعد — اكتب أول مهمة فوق 👆',
+        todayTasks: 'مهام اليوم',
+        dashTitle: 'إنجازاتك بالأرقام',
+        year: 'السنة',
+        emptyDash: 'لا توجد بيانات بعد. سجّل مهامك من صفحة «اليوم» وستظهر إنجازاتك هنا.',
+        seedDemo: 'جرّب ببيانات تجريبية',
+        clearDemo: 'حذف البيانات التجريبية',
+        kpiTotal: 'إجمالي المهام',
+        kpiDays: 'أيام العمل',
+        kpiDaysSub: 'يوم سجّلت فيه مهام',
+        kpiAvg: 'متوسط المهام في اليوم',
+        kpiAvgSub: 'لكل يوم عمل',
+        kpiStreak: 'أطول سلسلة أيام',
+        kpiStreakSub: 'أيام متتالية',
+        monthlyTitle: 'المهام شهريًا',
+        tableToggle: 'عرض الأرقام في جدول',
+        thMonth: 'الشهر',
+        thTasks: 'المهام',
+        thDays: 'أيام العمل',
+        heatmapTitle: 'خريطة نشاط السنة',
+        less: 'أقل',
+        more: 'أكثر',
+        logTitle: 'سجل المهام',
+        deleteTask: 'حذف المهمة',
+        noTasks: 'لا مهام',
+        chartAria: 'عدد المهام في كل شهر من السنة',
+        langButton: 'English'
+      },
+      taskWord: function (n) {
+        if (n === 1) return 'مهمة واحدة';
+        if (n === 2) return 'مهمتان';
+        if (n >= 3 && n <= 10) return n + ' مهام';
+        return n + ' مهمة';
+      },
+      dayWord: function (n) {
+        if (n === 1) return 'يوم واحد';
+        if (n === 2) return 'يومان';
+        if (n >= 3 && n <= 10) return n + ' أيام';
+        return n + ' يوم';
+      },
+      completedToday: function (n) { return 'أنجزت اليوم ' + this.taskWord(n); },
+      inYear: function (y) { return 'خلال سنة ' + y; },
+      currentStreak: function (n) { return 'السلسلة الحالية: ' + this.dayWord(n); },
+      inActiveDays: function (n) { return 'في ' + this.dayWord(n) + ' عمل'; },
+      demoTasks: [
+        'مراجعة تقرير الأداء الأسبوعي', 'اجتماع متابعة مع الفريق', 'الرد على بريد العملاء',
+        'تحديث خطة المشروع', 'إعداد عرض تقديمي', 'مراجعة طلبات الشراء',
+        'تدقيق البيانات الشهرية', 'كتابة محضر الاجتماع', 'متابعة المهام المتأخرة',
+        'تطوير نموذج العمل الجديد', 'تنسيق مع قسم الموارد', 'إغلاق تذاكر الدعم'
+      ]
+    },
+    en: {
+      dir: 'ltr',
+      htmlLang: 'en',
+      locale: 'en',
+      title: 'Najez — Daily Work Tracker',
+      months: ['January', 'February', 'March', 'April', 'May', 'June',
+               'July', 'August', 'September', 'October', 'November', 'December'],
+      monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      strings: {
+        brand: 'Najez',
+        navToday: 'Today',
+        navAchievements: 'Achievements',
+        question: 'What did you work on today?',
+        placeholder: 'Write a task you worked on…',
+        add: 'Add',
+        todayEmpty: 'Nothing logged yet today — write your first task above 👆',
+        todayTasks: "Today's tasks",
+        dashTitle: 'Your achievements in numbers',
+        year: 'Year',
+        emptyDash: 'No data yet. Log your tasks from the “Today” page and your achievements will show up here.',
+        seedDemo: 'Try with demo data',
+        clearDemo: 'Delete demo data',
+        kpiTotal: 'Total tasks',
+        kpiDays: 'Active days',
+        kpiDaysSub: 'days with logged tasks',
+        kpiAvg: 'Tasks per day',
+        kpiAvgSub: 'per active day',
+        kpiStreak: 'Longest streak',
+        kpiStreakSub: 'consecutive days',
+        monthlyTitle: 'Tasks per month',
+        tableToggle: 'Show numbers in a table',
+        thMonth: 'Month',
+        thTasks: 'Tasks',
+        thDays: 'Active days',
+        heatmapTitle: 'Year activity map',
+        less: 'Less',
+        more: 'More',
+        logTitle: 'Task log',
+        deleteTask: 'Delete task',
+        noTasks: 'No tasks',
+        chartAria: 'Number of tasks per month of the year',
+        langButton: 'عربي'
+      },
+      taskWord: function (n) { return n === 1 ? '1 task' : n + ' tasks'; },
+      dayWord: function (n) { return n === 1 ? '1 day' : n + ' days'; },
+      completedToday: function (n) { return 'You completed ' + this.taskWord(n) + ' today'; },
+      inYear: function (y) { return 'in ' + y; },
+      currentStreak: function (n) { return 'Current streak: ' + this.dayWord(n); },
+      inActiveDays: function (n) { return 'across ' + this.dayWord(n) + ' active ' + (n === 1 ? 'day' : 'days'); },
+      demoTasks: [
+        'Review weekly performance report', 'Follow-up meeting with the team', 'Reply to customer emails',
+        'Update the project plan', 'Prepare a presentation', 'Review purchase requests',
+        'Audit monthly data', 'Write meeting minutes', 'Follow up on overdue tasks',
+        'Develop the new business model', 'Coordinate with HR', 'Close support tickets'
+      ]
+    }
+  };
+
+  var lang = localStorage.getItem(LANG_KEY);
+  if (lang !== 'ar' && lang !== 'en') lang = 'ar';
+
+  var L, dateFmt, timeFmt;
+
+  function t(key) { return L.strings[key]; }
+
+  function applyLanguage() {
+    L = I18N[lang];
+    dateFmt = new Intl.DateTimeFormat(L.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    timeFmt = new Intl.DateTimeFormat(L.locale, { hour: '2-digit', minute: '2-digit' });
+
+    document.documentElement.lang = L.htmlLang;
+    document.documentElement.dir = L.dir;
+    document.title = L.title;
+
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      el.placeholder = t(el.dataset.i18nPlaceholder);
+    });
+    document.getElementById('lang-toggle').textContent = t('langButton');
+  }
+
+  document.getElementById('lang-toggle').addEventListener('click', function () {
+    lang = lang === 'ar' ? 'en' : 'ar';
+    localStorage.setItem(LANG_KEY, lang);
+    applyLanguage();
+    route();
+  });
 
   /* ===== التخزين ===== */
   function loadEntries() {
@@ -42,7 +196,7 @@
     saveEntries(loadEntries().filter(function (e) { return e.id !== id; }));
   }
 
-  /* ===== أدوات التاريخ والصياغة ===== */
+  /* ===== أدوات التاريخ ===== */
   function toDateKey(d) {
     return d.getFullYear() + '-' +
       String(d.getMonth() + 1).padStart(2, '0') + '-' +
@@ -52,20 +206,6 @@
   function fromDateKey(key) {
     var p = key.split('-');
     return new Date(+p[0], +p[1] - 1, +p[2]);
-  }
-
-  function taskWord(n) {
-    if (n === 1) return 'مهمة واحدة';
-    if (n === 2) return 'مهمتان';
-    if (n >= 3 && n <= 10) return n + ' مهام';
-    return n + ' مهمة';
-  }
-
-  function dayWord(n) {
-    if (n === 1) return 'يوم واحد';
-    if (n === 2) return 'يومان';
-    if (n >= 3 && n <= 10) return n + ' أيام';
-    return n + ' يوم';
   }
 
   /* ===== التلميح (tooltip) ===== */
@@ -95,7 +235,7 @@
   /* ===== صفحة اليوم ===== */
   function renderToday() {
     var todayKey = toDateKey(new Date());
-    document.getElementById('today-date').textContent = AR_DATE.format(new Date());
+    document.getElementById('today-date').textContent = dateFmt.format(new Date());
 
     var todays = loadEntries()
       .filter(function (e) { return e.date === todayKey; })
@@ -108,7 +248,7 @@
     });
 
     document.getElementById('today-count').textContent =
-      todays.length ? 'أنجزت اليوم ' + taskWord(todays.length) : 'مهام اليوم';
+      todays.length ? L.completedToday(todays.length) : t('todayTasks');
     document.getElementById('today-empty').hidden = todays.length > 0;
   }
 
@@ -128,15 +268,15 @@
 
     var time = document.createElement('time');
     time.textContent = withTime
-      ? AR_TIME.format(new Date(entry.ts))
-      : AR_DATE.format(fromDateKey(entry.date));
+      ? timeFmt.format(new Date(entry.ts))
+      : dateFmt.format(fromDateKey(entry.date));
     li.appendChild(time);
 
     var del = document.createElement('button');
     del.type = 'button';
     del.className = 'btn-delete';
     del.textContent = '✕';
-    del.setAttribute('aria-label', 'حذف المهمة');
+    del.setAttribute('aria-label', t('deleteTask'));
     del.addEventListener('click', function () {
       deleteEntry(entry.id);
       onDelete();
@@ -163,8 +303,8 @@
       return e.date.slice(0, 4) === String(year);
     });
 
-    var byDay = {};   // dateKey -> count
-    var byMonth = []; // 0..11 -> { tasks, daySet }
+    var byDay = {};
+    var byMonth = [];
     for (var m = 0; m < 12; m++) byMonth.push({ tasks: 0, days: {} });
 
     yearEntries.forEach(function (e) {
@@ -239,18 +379,16 @@
 
     var stats = computeStats(entries, selectedYear);
 
-    // مؤشرات الأرقام
     document.getElementById('kpi-total').textContent = stats.total.toLocaleString('en-US');
-    document.getElementById('kpi-total-sub').textContent = 'خلال سنة ' + selectedYear;
+    document.getElementById('kpi-total-sub').textContent = L.inYear(selectedYear);
     document.getElementById('kpi-days').textContent = stats.activeDays.toLocaleString('en-US');
-    document.getElementById('kpi-days-sub').textContent = 'يوم سجّلت فيه مهام';
     document.getElementById('kpi-avg').textContent =
       stats.activeDays ? (stats.total / stats.activeDays).toFixed(1) : '0';
     document.getElementById('kpi-streak').textContent = stats.longestStreak.toLocaleString('en-US');
     document.getElementById('kpi-streak-sub').textContent =
       selectedYear === currentYear && stats.currentStreak > 0
-        ? 'السلسلة الحالية: ' + dayWord(stats.currentStreak)
-        : 'أيام متتالية';
+        ? L.currentStreak(stats.currentStreak)
+        : t('kpiStreakSub');
 
     renderMonthlyChart(stats.byMonth);
     renderMonthlyTable(stats.byMonth);
@@ -265,8 +403,15 @@
 
   /* الرسم الشهري — أعمدة، سلسلة واحدة بلون أزرق تسلسلي */
   function renderMonthlyChart(byMonth) {
+    var isRTL = L.dir === 'rtl';
     var W = 760, H = 240;
-    var margin = { top: 18, bottom: 26, right: 34, left: 6 };
+    // هامش أعرض في جهة أرقام المحور (يمين في العربية، يسار في الإنجليزية)
+    var margin = {
+      top: 18,
+      bottom: 26,
+      right: isRTL ? 34 : 6,
+      left: isRTL ? 6 : 34
+    };
     var plotW = W - margin.left - margin.right;
     var plotH = H - margin.top - margin.bottom;
 
@@ -280,26 +425,26 @@
     var svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', 'عدد المهام في كل شهر من السنة');
+    svg.setAttribute('aria-label', t('chartAria'));
 
-    // خطوط الشبكة وقيم المحور (على اليمين — اتجاه القراءة)
+    // خطوط الشبكة وقيم المحور في جهة بداية القراءة
     var ticks = 4;
-    for (var t = 0; t <= ticks; t++) {
-      var val = Math.round(niceMax * t / ticks);
-      var y = margin.top + plotH - (plotH * t / ticks);
+    for (var tk = 0; tk <= ticks; tk++) {
+      var val = Math.round(niceMax * tk / ticks);
+      var y = margin.top + plotH - (plotH * tk / ticks);
       var line = document.createElementNS(svgNS, 'line');
       line.setAttribute('x1', margin.left);
       line.setAttribute('x2', margin.left + plotW);
       line.setAttribute('y1', y);
       line.setAttribute('y2', y);
-      line.setAttribute('class', t === 0 ? 'axis-line' : 'grid-line');
+      line.setAttribute('class', tk === 0 ? 'axis-line' : 'grid-line');
       svg.appendChild(line);
 
-      if (t > 0) {
+      if (tk > 0) {
         var tickText = document.createElementNS(svgNS, 'text');
-        tickText.setAttribute('x', W - 4);
+        tickText.setAttribute('x', isRTL ? W - 4 : 4);
         tickText.setAttribute('y', y + 4);
-        tickText.setAttribute('text-anchor', 'end');
+        tickText.setAttribute('text-anchor', isRTL ? 'end' : 'start');
         tickText.setAttribute('class', 'tick-label');
         tickText.textContent = val;
         svg.appendChild(tickText);
@@ -310,8 +455,10 @@
     var barW = Math.min(24, band * 0.5);
 
     byMonth.forEach(function (mo, i) {
-      // يناير في أقصى اليمين — اتجاه القراءة العربية
-      var bandX = margin.left + plotW - (i + 1) * band;
+      // يناير في جهة بداية القراءة: يمين في العربية، يسار في الإنجليزية
+      var bandX = isRTL
+        ? margin.left + plotW - (i + 1) * band
+        : margin.left + i * band;
       var x = bandX + (band - barW) / 2;
       var h = niceMax ? (mo.tasks / niceMax) * plotH : 0;
       var y = margin.top + plotH - h;
@@ -340,7 +487,7 @@
       monthLabel.setAttribute('y', H - 8);
       monthLabel.setAttribute('text-anchor', 'middle');
       monthLabel.setAttribute('class', 'month-label');
-      monthLabel.textContent = MONTHS[i];
+      monthLabel.textContent = L.monthsShort[i];
       svg.appendChild(monthLabel);
 
       // منطقة التفاعل: العمود كامل الارتفاع أوسع من العلامة نفسها
@@ -352,8 +499,8 @@
       hit.setAttribute('class', 'bar-hit');
       hit.addEventListener('pointermove', function (evt) {
         if (bar) bar.classList.add('hover');
-        showTooltip(evt, MONTHS[i] + ' — ' + taskWord(mo.tasks),
-          mo.days ? 'في ' + dayWord(mo.days) + ' عمل' : '');
+        showTooltip(evt, L.months[i] + ' — ' + L.taskWord(mo.tasks),
+          mo.days ? L.inActiveDays(mo.days) : '');
       });
       hit.addEventListener('pointerleave', function () {
         if (bar) bar.classList.remove('hover');
@@ -393,7 +540,7 @@
     tbody.textContent = '';
     byMonth.forEach(function (mo, i) {
       var tr = document.createElement('tr');
-      [MONTHS[i], mo.tasks, mo.days].forEach(function (v) {
+      [L.months[i], mo.tasks, mo.days].forEach(function (v) {
         var td = document.createElement('td');
         td.textContent = v;
         tr.appendChild(td);
@@ -432,7 +579,7 @@
       label.className = 'hm-month-label';
       label.style.gridColumn = String(weekIdx + 1);
       label.style.whiteSpace = 'nowrap';
-      label.textContent = MONTHS[m];
+      label.textContent = L.monthsShort[m];
       monthsRow.appendChild(label);
     }
     container.appendChild(monthsRow);
@@ -454,10 +601,10 @@
       if (inYear && !isFuture) {
         (function (dateStr, count) {
           cell.addEventListener('pointermove', function (evt) {
-            showTooltip(evt, count ? taskWord(count) : 'لا مهام', dateStr);
+            showTooltip(evt, count ? L.taskWord(count) : t('noTasks'), dateStr);
           });
           cell.addEventListener('pointerleave', hideTooltip);
-        })(AR_DATE.format(day), count);
+        })(dateFmt.format(day), count);
       }
 
       grid.appendChild(cell);
@@ -489,13 +636,6 @@
   }
 
   /* ===== البيانات التجريبية ===== */
-  var DEMO_TASKS = [
-    'مراجعة تقرير الأداء الأسبوعي', 'اجتماع متابعة مع الفريق', 'الرد على بريد العملاء',
-    'تحديث خطة المشروع', 'إعداد عرض تقديمي', 'مراجعة طلبات الشراء',
-    'تدقيق البيانات الشهرية', 'كتابة محضر الاجتماع', 'متابعة المهام المتأخرة',
-    'تطوير نموذج العمل الجديد', 'تنسيق مع قسم الموارد', 'إغلاق تذاكر الدعم'
-  ];
-
   document.getElementById('seed-demo').addEventListener('click', function () {
     var entries = loadEntries();
     var today = new Date();
@@ -512,7 +652,7 @@
           entries.push({
             id: 'demo-' + d.getTime() + '-' + i,
             date: toDateKey(d),
-            text: DEMO_TASKS[Math.floor(rand() * DEMO_TASKS.length)],
+            text: L.demoTasks[Math.floor(rand() * L.demoTasks.length)],
             ts: d.getTime() + i * 3600000,
             demo: true
           });
@@ -551,5 +691,6 @@
   }
 
   window.addEventListener('hashchange', route);
+  applyLanguage();
   route();
 })();
