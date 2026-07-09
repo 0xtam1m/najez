@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>ناجز — متابعة مهام العمل اليومية</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header-inner">
+      <a class="brand" href="#/today">ناجز</a>
+      <nav class="tabs" aria-label="التنقل الرئيسي">
+        <a href="#/today" data-route="today" class="tab">اليوم</a>
+        <a href="#/achievements" data-route="achievements" class="tab">الإنجازات</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- صفحة اليوم -->
+  <main id="view-today" class="view" hidden>
+    <section class="today-hero">
+      <p class="today-date" id="today-date"></p>
+      <h1 class="today-question">إيش اشتغلت عليه اليوم؟</h1>
+      <form id="task-form" class="task-form">
+        <input id="task-input" type="text" autocomplete="off" maxlength="300"
+               placeholder="اكتب مهمة اشتغلت عليها…" aria-label="مهمة اليوم">
+        <button type="submit" class="btn-primary">أضف</button>
+      </form>
+    </section>
+
+    <section class="today-list-section">
+      <h2 class="section-title" id="today-count"></h2>
+      <ul id="today-list" class="task-list"></ul>
+      <p id="today-empty" class="empty-hint" hidden>ما سجّلت شي اليوم بعد — اكتب أول مهمة فوق 👆</p>
+    </section>
+  </main>
+
+  <!-- صفحة الإنجازات -->
+  <main id="view-achievements" class="view" hidden>
+    <div class="dash-header">
+      <h1 class="dash-title">إنجازاتك بالأرقام</h1>
+      <label class="year-filter">
+        <span>السنة</span>
+        <select id="year-select" aria-label="اختيار السنة"></select>
+      </label>
+    </div>
+
+    <div id="dash-empty" class="dash-empty" hidden>
+      <p>لا توجد بيانات بعد. سجّل مهامك من صفحة «اليوم» وستظهر إنجازاتك هنا.</p>
+      <button id="seed-demo" class="btn-ghost">جرّب ببيانات تجريبية</button>
+    </div>
+
+    <div id="dash-body">
+      <section class="kpi-row" aria-label="ملخص الأرقام">
+        <div class="stat-tile">
+          <span class="stat-label">إجمالي المهام</span>
+          <span class="stat-value" id="kpi-total">0</span>
+          <span class="stat-sub" id="kpi-total-sub"></span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">أيام العمل</span>
+          <span class="stat-value" id="kpi-days">0</span>
+          <span class="stat-sub" id="kpi-days-sub"></span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">متوسط المهام في اليوم</span>
+          <span class="stat-value" id="kpi-avg">0</span>
+          <span class="stat-sub">لكل يوم عمل</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">أطول سلسلة أيام</span>
+          <span class="stat-value" id="kpi-streak">0</span>
+          <span class="stat-sub" id="kpi-streak-sub"></span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="card-title">المهام شهريًا</h2>
+        <div id="monthly-chart" class="monthly-chart"></div>
+        <details class="table-details">
+          <summary>عرض الأرقام في جدول</summary>
+          <table class="data-table" id="monthly-table">
+            <thead><tr><th>الشهر</th><th>المهام</th><th>أيام العمل</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </details>
+      </section>
+
+      <section class="card">
+        <h2 class="card-title">خريطة نشاط السنة</h2>
+        <div class="heatmap-scroll">
+          <div id="heatmap" class="heatmap"></div>
+        </div>
+        <div class="heatmap-legend" aria-hidden="true">
+          <span>أقل</span>
+          <span class="hm-cell l0"></span><span class="hm-cell l1"></span><span class="hm-cell l2"></span><span class="hm-cell l3"></span><span class="hm-cell l4"></span>
+          <span>أكثر</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <details class="table-details">
+          <summary>سجل المهام <span id="log-count"></span></summary>
+          <ul id="log-list" class="log-list"></ul>
+        </details>
+        <button id="clear-demo" class="btn-ghost btn-danger" hidden>حذف البيانات التجريبية</button>
+      </section>
+    </div>
+  </main>
+
+  <div id="tooltip" class="tooltip" role="status" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
