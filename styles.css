@@ -78,6 +78,19 @@ body {
   text-decoration: none;
 }
 .brand-logo { display: block; border-radius: 8px; }
+.lang-toggle {
+  margin-inline-start: auto;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  color: var(--text-secondary);
+  background: none;
+  border: 1px solid var(--baseline);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.lang-toggle:hover { color: var(--text-primary); background: var(--page); }
 
 /* ===== شريط التنقل السفلي (نمط تطبيقات الجوال) ===== */
 .bottom-nav {
@@ -330,7 +343,7 @@ body {
   font-size: 14px;
 }
 .data-table th {
-  text-align: right;
+  text-align: start;
   color: var(--text-secondary);
   font-weight: 600;
   border-bottom: 1px solid var(--baseline);

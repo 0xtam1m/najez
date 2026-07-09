@@ -16,8 +16,9 @@
     <div class="app-header-inner">
       <a class="brand" href="#/today">
         <img src="logo.svg" alt="" class="brand-logo" width="30" height="30">
-        <span>ناجز</span>
+        <span data-i18n="brand">ناجز</span>
       </a>
+      <button id="lang-toggle" class="lang-toggle" type="button">English</button>
     </div>
   </header>
 
@@ -25,100 +26,104 @@
   <main id="view-today" class="view" hidden>
     <section class="today-hero">
       <p class="today-date" id="today-date"></p>
-      <h1 class="today-question">إيش اشتغلت عليه اليوم؟</h1>
+      <h1 class="today-question" data-i18n="question">إيش اشتغلت عليه اليوم؟</h1>
       <form id="task-form" class="task-form">
         <input id="task-input" type="text" autocomplete="off" maxlength="300"
-               placeholder="اكتب مهمة اشتغلت عليها…" aria-label="مهمة اليوم">
-        <button type="submit" class="btn-primary">أضف</button>
+               placeholder="اكتب مهمة اشتغلت عليها…" data-i18n-placeholder="placeholder">
+        <button type="submit" class="btn-primary" data-i18n="add">أضف</button>
       </form>
     </section>
 
     <section class="today-list-section">
       <h2 class="section-title" id="today-count"></h2>
       <ul id="today-list" class="task-list"></ul>
-      <p id="today-empty" class="empty-hint" hidden>ما سجّلت شي اليوم بعد — اكتب أول مهمة فوق 👆</p>
+      <p id="today-empty" class="empty-hint" data-i18n="todayEmpty" hidden>ما سجّلت شي اليوم بعد — اكتب أول مهمة فوق 👆</p>
     </section>
   </main>
 
   <!-- صفحة الإنجازات -->
   <main id="view-achievements" class="view" hidden>
     <div class="dash-header">
-      <h1 class="dash-title">إنجازاتك بالأرقام</h1>
+      <h1 class="dash-title" data-i18n="dashTitle">إنجازاتك بالأرقام</h1>
       <label class="year-filter">
-        <span>السنة</span>
-        <select id="year-select" aria-label="اختيار السنة"></select>
+        <span data-i18n="year">السنة</span>
+        <select id="year-select"></select>
       </label>
     </div>
 
     <div id="dash-empty" class="dash-empty" hidden>
-      <p>لا توجد بيانات بعد. سجّل مهامك من صفحة «اليوم» وستظهر إنجازاتك هنا.</p>
-      <button id="seed-demo" class="btn-ghost">جرّب ببيانات تجريبية</button>
+      <p data-i18n="emptyDash">لا توجد بيانات بعد. سجّل مهامك من صفحة «اليوم» وستظهر إنجازاتك هنا.</p>
+      <button id="seed-demo" class="btn-ghost" data-i18n="seedDemo">جرّب ببيانات تجريبية</button>
     </div>
 
     <div id="dash-body">
-      <section class="kpi-row" aria-label="ملخص الأرقام">
+      <section class="kpi-row">
         <div class="stat-tile">
-          <span class="stat-label">إجمالي المهام</span>
+          <span class="stat-label" data-i18n="kpiTotal">إجمالي المهام</span>
           <span class="stat-value" id="kpi-total">0</span>
           <span class="stat-sub" id="kpi-total-sub"></span>
         </div>
         <div class="stat-tile">
-          <span class="stat-label">أيام العمل</span>
+          <span class="stat-label" data-i18n="kpiDays">أيام العمل</span>
           <span class="stat-value" id="kpi-days">0</span>
-          <span class="stat-sub" id="kpi-days-sub"></span>
+          <span class="stat-sub" data-i18n="kpiDaysSub">يوم سجّلت فيه مهام</span>
         </div>
         <div class="stat-tile">
-          <span class="stat-label">متوسط المهام في اليوم</span>
+          <span class="stat-label" data-i18n="kpiAvg">متوسط المهام في اليوم</span>
           <span class="stat-value" id="kpi-avg">0</span>
-          <span class="stat-sub">لكل يوم عمل</span>
+          <span class="stat-sub" data-i18n="kpiAvgSub">لكل يوم عمل</span>
         </div>
         <div class="stat-tile">
-          <span class="stat-label">أطول سلسلة أيام</span>
+          <span class="stat-label" data-i18n="kpiStreak">أطول سلسلة أيام</span>
           <span class="stat-value" id="kpi-streak">0</span>
           <span class="stat-sub" id="kpi-streak-sub"></span>
         </div>
       </section>
 
       <section class="card">
-        <h2 class="card-title">المهام شهريًا</h2>
+        <h2 class="card-title" data-i18n="monthlyTitle">المهام شهريًا</h2>
         <div id="monthly-chart" class="monthly-chart"></div>
         <details class="table-details">
-          <summary>عرض الأرقام في جدول</summary>
+          <summary data-i18n="tableToggle">عرض الأرقام في جدول</summary>
           <table class="data-table" id="monthly-table">
-            <thead><tr><th>الشهر</th><th>المهام</th><th>أيام العمل</th></tr></thead>
+            <thead><tr>
+              <th data-i18n="thMonth">الشهر</th>
+              <th data-i18n="thTasks">المهام</th>
+              <th data-i18n="thDays">أيام العمل</th>
+            </tr></thead>
             <tbody></tbody>
           </table>
         </details>
       </section>
 
       <section class="card">
-        <h2 class="card-title">خريطة نشاط السنة</h2>
+        <h2 class="card-title" data-i18n="heatmapTitle">خريطة نشاط السنة</h2>
         <div class="heatmap-scroll">
           <div id="heatmap" class="heatmap"></div>
         </div>
         <div class="heatmap-legend" aria-hidden="true">
-          <span>أقل</span>
+          <span data-i18n="less">أقل</span>
           <span class="hm-cell l0"></span><span class="hm-cell l1"></span><span class="hm-cell l2"></span><span class="hm-cell l3"></span><span class="hm-cell l4"></span>
-          <span>أكثر</span>
+          <span data-i18n="more">أكثر</span>
         </div>
       </section>
 
       <section class="card">
         <details class="table-details">
-          <summary>سجل المهام <span id="log-count"></span></summary>
+          <summary><span data-i18n="logTitle">سجل المهام</span> <span id="log-count"></span></summary>
           <ul id="log-list" class="log-list"></ul>
         </details>
-        <button id="clear-demo" class="btn-ghost btn-danger" hidden>حذف البيانات التجريبية</button>
+        <button id="clear-demo" class="btn-ghost btn-danger" data-i18n="clearDemo" hidden>حذف البيانات التجريبية</button>
       </section>
     </div>
   </main>
 
-  <nav class="bottom-nav" aria-label="التنقل الرئيسي">
+  <nav class="bottom-nav">
     <a href="#/today" data-route="today" class="tab">
       <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
         <path d="M5 12.5 L10 17.5 L19 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span>اليوم</span>
+      <span data-i18n="navToday">اليوم</span>
     </a>
     <a href="#/achievements" data-route="achievements" class="tab">
       <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
@@ -128,7 +133,7 @@
           <line x1="19" y1="20" x2="19" y2="9"/>
         </g>
       </svg>
-      <span>الإنجازات</span>
+      <span data-i18n="navAchievements">الإنجازات</span>
     </a>
   </nav>
 
