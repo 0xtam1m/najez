@@ -52,7 +52,7 @@ body {
   line-height: 1.6;
 }
 
-/* ===== الرأس والتنقل ===== */
+/* ===== الرأس ===== */
 .app-header {
   border-bottom: 1px solid var(--border);
   background: var(--surface-1);
@@ -66,34 +66,60 @@ body {
   padding: 0 20px;
   display: flex;
   align-items: center;
-  gap: 28px;
   height: 56px;
 }
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 22px;
   font-weight: 700;
   color: var(--accent);
   text-decoration: none;
 }
-.tabs { display: flex; gap: 4px; }
-.tab {
-  color: var(--text-secondary);
+.brand-logo { display: block; border-radius: 8px; }
+
+/* ===== شريط التنقل السفلي (نمط تطبيقات الجوال) ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  background: var(--surface-1);
+  border-top: 1px solid var(--border);
+  padding: 6px 12px calc(6px + env(safe-area-inset-bottom, 0px));
+}
+.bottom-nav .tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 96px;
+  max-width: 160px;
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 12px;
+  color: var(--text-muted);
   text-decoration: none;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 15px;
+  font-size: 12px;
 }
-.tab:hover { background: var(--page); color: var(--text-primary); }
-.tab.active {
-  background: var(--page);
-  color: var(--text-primary);
-  font-weight: 600;
+.bottom-nav .tab svg { display: block; }
+.bottom-nav .tab:hover { color: var(--text-secondary); }
+.bottom-nav .tab.active {
+  color: var(--accent);
+  font-weight: 700;
 }
+.bottom-nav .tab.active svg * { stroke-width: 3; }
 
 .view {
   max-width: 880px;
   margin: 0 auto;
-  padding: 28px 20px 64px;
+  /* مساحة سفلية حتى لا يغطي شريط التنقل المحتوى */
+  padding: 28px 20px calc(96px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ===== صفحة اليوم ===== */
