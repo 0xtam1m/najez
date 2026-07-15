@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
-  <title>ناجز — متابعة مهام العمل اليومية</title>
+  <title>ناجز — امتلك مسيرتك المهنية</title>
   <meta name="theme-color" content="#2a78d6">
   <link rel="icon" href="logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -14,7 +14,7 @@
 <body>
   <header class="app-header">
     <div class="app-header-inner">
-      <a class="brand" href="#/today">
+      <a class="brand" href="#/dashboard">
         <img src="logo.svg" alt="" class="brand-logo" width="30" height="30">
         <span data-i18n="brand">ناجز</span>
       </a>
@@ -22,123 +22,152 @@
     </div>
   </header>
 
-  <!-- صفحة اليوم -->
-  <main id="view-today" class="view" hidden>
-    <section class="today-hero">
-      <p class="today-date" id="today-date"></p>
-      <h1 class="today-question" data-i18n="question">إيش اشتغلت عليه اليوم؟</h1>
-      <form id="task-form" class="task-form">
-        <input id="task-input" type="text" autocomplete="off" maxlength="300"
-               placeholder="اكتب مهمة اشتغلت عليها…" data-i18n-placeholder="placeholder">
-        <button type="submit" class="btn-primary" data-i18n="add">أضف</button>
-      </form>
-    </section>
-
-    <section class="today-list-section">
-      <h2 class="section-title" id="today-count"></h2>
-      <ul id="today-list" class="task-list"></ul>
-      <p id="today-empty" class="empty-hint" data-i18n="todayEmpty" hidden>ما سجّلت شي اليوم بعد — اكتب أول مهمة فوق 👆</p>
-    </section>
-  </main>
-
-  <!-- صفحة الإنجازات -->
-  <main id="view-achievements" class="view" hidden>
-    <div class="dash-header">
-      <h1 class="dash-title" data-i18n="dashTitle">إنجازاتك بالأرقام</h1>
-      <label class="year-filter">
-        <span data-i18n="year">السنة</span>
-        <select id="year-select"></select>
-      </label>
+  <!-- لوحة المعلومات -->
+  <main id="view-dashboard" class="view" hidden>
+    <div class="page-header">
+      <h1 data-i18n="dashTitle">لوحة المعلومات</h1>
+      <p class="page-hint" data-i18n="dashHint">كل أرقام مسيرتك المهنية في مكان واحد</p>
     </div>
-
     <div id="dash-empty" class="dash-empty" hidden>
-      <p data-i18n="emptyDash">لا توجد بيانات بعد. سجّل مهامك من صفحة «اليوم» وستظهر إنجازاتك هنا.</p>
+      <p data-i18n="emptyDash"></p>
       <button id="seed-demo" class="btn-ghost" data-i18n="seedDemo">جرّب ببيانات تجريبية</button>
     </div>
+    <div id="dash-body"></div>
+  </main>
 
-    <div id="dash-body">
-      <section class="kpi-row">
-        <div class="stat-tile">
-          <span class="stat-label" data-i18n="kpiTotal">إجمالي المهام</span>
-          <span class="stat-value" id="kpi-total">0</span>
-          <span class="stat-sub" id="kpi-total-sub"></span>
-        </div>
-        <div class="stat-tile">
-          <span class="stat-label" data-i18n="kpiDays">أيام العمل</span>
-          <span class="stat-value" id="kpi-days">0</span>
-          <span class="stat-sub" data-i18n="kpiDaysSub">يوم سجّلت فيه مهام</span>
-        </div>
-        <div class="stat-tile">
-          <span class="stat-label" data-i18n="kpiAvg">متوسط المهام في اليوم</span>
-          <span class="stat-value" id="kpi-avg">0</span>
-          <span class="stat-sub" data-i18n="kpiAvgSub">لكل يوم عمل</span>
-        </div>
-        <div class="stat-tile">
-          <span class="stat-label" data-i18n="kpiStreak">أطول سلسلة أيام</span>
-          <span class="stat-value" id="kpi-streak">0</span>
-          <span class="stat-sub" id="kpi-streak-sub"></span>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2 class="card-title" data-i18n="monthlyTitle">المهام شهريًا</h2>
-        <div id="monthly-chart" class="monthly-chart"></div>
-        <details class="table-details">
-          <summary data-i18n="tableToggle">عرض الأرقام في جدول</summary>
-          <table class="data-table" id="monthly-table">
-            <thead><tr>
-              <th data-i18n="thMonth">الشهر</th>
-              <th data-i18n="thTasks">المهام</th>
-              <th data-i18n="thDays">أيام العمل</th>
-            </tr></thead>
-            <tbody></tbody>
-          </table>
-        </details>
-      </section>
-
-      <section class="card">
-        <h2 class="card-title" data-i18n="heatmapTitle">خريطة نشاط السنة</h2>
-        <div class="heatmap-scroll">
-          <div id="heatmap" class="heatmap"></div>
-        </div>
-        <div class="heatmap-legend" aria-hidden="true">
-          <span data-i18n="less">أقل</span>
-          <span class="hm-cell l0"></span><span class="hm-cell l1"></span><span class="hm-cell l2"></span><span class="hm-cell l3"></span><span class="hm-cell l4"></span>
-          <span data-i18n="more">أكثر</span>
-        </div>
-      </section>
-
-      <section class="card">
-        <details class="table-details">
-          <summary><span data-i18n="logTitle">سجل المهام</span> <span id="log-count"></span></summary>
-          <ul id="log-list" class="log-list"></ul>
-        </details>
-        <button id="clear-demo" class="btn-ghost btn-danger" data-i18n="clearDemo" hidden>حذف البيانات التجريبية</button>
-      </section>
+  <!-- الأهداف السنوية -->
+  <main id="view-annual" class="view" hidden>
+    <div class="page-header">
+      <h1 data-i18n="annualTitle">الأهداف السنوية</h1>
+      <p class="page-hint" data-i18n="annualHint"></p>
     </div>
+    <div id="annual-sections"></div>
+  </main>
+
+  <!-- خطة 30/60/90 -->
+  <main id="view-plan" class="view" hidden>
+    <div class="page-header">
+      <h1 data-i18n="planTitle">خطة 30/60/90 يوم</h1>
+      <p class="page-hint" data-i18n="planHint"></p>
+    </div>
+    <div id="plan-phases"></div>
+  </main>
+
+  <!-- قائمة الأسبوع -->
+  <main id="view-weekly" class="view" hidden>
+    <div class="page-header">
+      <h1 data-i18n="weeklyTitle">قائمة الأسبوع</h1>
+    </div>
+    <div class="period-nav">
+      <button id="week-prev" class="btn-icon" type="button">‹</button>
+      <div class="period-label">
+        <span id="week-label"></span>
+        <button id="week-today" class="btn-chip" type="button" data-i18n="thisWeek" hidden>هذا الأسبوع</button>
+      </div>
+      <button id="week-next" class="btn-icon" type="button">›</button>
+    </div>
+    <div id="weekly-sections"></div>
+  </main>
+
+  <!-- الملخص الشهري -->
+  <main id="view-monthly" class="view" hidden>
+    <div class="page-header">
+      <h1 data-i18n="monthlyTitle">الملخص الشهري</h1>
+    </div>
+    <div class="period-nav">
+      <button id="month-prev" class="btn-icon" type="button">‹</button>
+      <div class="period-label">
+        <span id="month-label"></span>
+        <button id="month-today" class="btn-chip" type="button" data-i18n="thisMonth" hidden>هذا الشهر</button>
+      </div>
+      <button id="month-next" class="btn-icon" type="button">›</button>
+    </div>
+    <div id="monthly-sections"></div>
+  </main>
+
+  <!-- أهداف الترقية -->
+  <main id="view-promotion" class="view" hidden>
+    <div class="page-header">
+      <h1 data-i18n="promoTitle">أهداف الترقية</h1>
+      <p class="page-hint" data-i18n="promoHint"></p>
+    </div>
+    <section class="card promo-header-card">
+      <div class="promo-fields">
+        <label>
+          <span data-i18n="fCurrentJob">الوظيفة الحالية</span>
+          <input id="promo-current" type="text">
+        </label>
+        <label>
+          <span data-i18n="fFutureJob">الوظيفة المستقبلية</span>
+          <input id="promo-future" type="text">
+        </label>
+        <label>
+          <span data-i18n="fTargetDate">تاريخ الترقية المستهدف</span>
+          <input id="promo-date" type="date">
+        </label>
+      </div>
+    </section>
+    <div id="promo-resps"></div>
+    <button id="promo-add-resp" class="btn-primary btn-block" data-i18n="addResp">إضافة مسؤولية جوهرية</button>
   </main>
 
   <nav class="bottom-nav">
-    <a href="#/today" data-route="today" class="tab">
-      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <path d="M5 12.5 L10 17.5 L19 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span data-i18n="navToday">اليوم</span>
-    </a>
-    <a href="#/achievements" data-route="achievements" class="tab">
-      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <g stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
-          <line x1="5" y1="20" x2="5" y2="12"/>
-          <line x1="12" y1="20" x2="12" y2="4"/>
-          <line x1="19" y1="20" x2="19" y2="9"/>
+    <a href="#/dashboard" data-route="dashboard" class="tab">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round">
+          <rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/>
+          <rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>
         </g>
       </svg>
-      <span data-i18n="navAchievements">الإنجازات</span>
+      <span data-i18n="navDashboard">اللوحة</span>
+    </a>
+    <a href="#/annual" data-route="annual" class="tab">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round">
+          <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/>
+        </g>
+      </svg>
+      <span data-i18n="navAnnual">السنوية</span>
+    </a>
+    <a href="#/plan" data-route="plan" class="tab">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="5" width="16" height="15" rx="2"/>
+          <line x1="4" y1="10" x2="20" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>
+        </g>
+      </svg>
+      <span data-i18n="navPlan">30/60/90</span>
+    </a>
+    <a href="#/weekly" data-route="weekly" class="tab">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 7 L7 9 L10.5 5.5"/><line x1="13" y1="7" x2="20" y2="7"/>
+          <path d="M5 15 L7 17 L10.5 13.5"/><line x1="13" y1="15" x2="20" y2="15"/>
+        </g>
+      </svg>
+      <span data-i18n="navWeekly">الأسبوع</span>
+    </a>
+    <a href="#/monthly" data-route="monthly" class="tab">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round">
+          <line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="19" y1="20" x2="19" y2="9"/>
+        </g>
+      </svg>
+      <span data-i18n="navMonthly">الشهر</span>
+    </a>
+    <a href="#/promotion" data-route="promotion" class="tab">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 17 L10 11 L14 15 L20 8"/><path d="M15 8 L20 8 L20 13"/>
+        </g>
+      </svg>
+      <span data-i18n="navPromotion">الترقية</span>
     </a>
   </nav>
 
   <div id="tooltip" class="tooltip" role="status" hidden></div>
 
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
