@@ -84,6 +84,12 @@ var NAJEZ_I18N = {
       phDeliverable: 'مخرَج قابل للقياس',
       phValueAdd: 'المهارة أو القدرة التي تثبتها',
 
+      /* الإعدادات */
+      settingsTitle: 'الإعدادات',
+      togglePlanLabel: 'صفحة خطة 30/60/90',
+      togglePlanHint: 'أخفها إن لم تكن في بداية دور جديد — بياناتها تبقى محفوظة ويمكن إعادتها في أي وقت.',
+      hidePageBtn: 'إخفاء هذه الصفحة',
+
       /* خطة 30/60/90 */
       planTitle: 'خطة 30/60/90 يوم',
       planHint: 'خارطة طريق لبداية دور جديد — أو أداة تخطيط ربع سنوية. عدّل المدد كما يناسبك.',
@@ -247,6 +253,11 @@ var NAJEZ_I18N = {
       phDeadline: 'e.g. Q3 or 2026-09',
       phDeliverable: 'Quantifiable, measurable output',
       phValueAdd: 'Capability or skill demonstrated',
+
+      settingsTitle: 'Settings',
+      togglePlanLabel: '30/60/90 plan page',
+      togglePlanHint: 'Hide it if you are not starting a new role — its data stays saved and you can bring it back anytime.',
+      hidePageBtn: 'Hide this page',
 
       planTitle: '30/60/90 Day Plan',
       planHint: 'A roadmap for starting a new role — or a quarterly planning tool. Adjust the timeline as you see fit.',

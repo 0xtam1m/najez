@@ -5,6 +5,31 @@
   var STORAGE_KEY = 'najez.career';
   var DEMO_KEY = 'najez.career.demo';
   var LANG_KEY = 'najez.lang';
+  var SETTINGS_KEY = 'najez.settings';
+
+  /* ===== الإعدادات ===== */
+  var settings = (function () {
+    try {
+      var raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+      return { showPlan: raw.showPlan !== false };
+    } catch (e) {
+      return { showPlan: true };
+    }
+  })();
+
+  function saveSettings() {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  }
+
+  function applyPlanVisibility() {
+    document.querySelector('.tab[data-route="plan"]').hidden = !settings.showPlan;
+  }
+
+  function setPlanVisible(visible) {
+    settings.showPlan = visible;
+    saveSettings();
+    applyPlanVisibility();
+  }
 
   /* ===== اللغة ===== */
   var lang = localStorage.getItem(LANG_KEY);
@@ -1000,7 +1025,10 @@
 
     var hasData = hasAnyData();
     empty.hidden = hasData;
-    if (!hasData) return;
+    if (!hasData) {
+      body.appendChild(settingsCard());
+      return;
+    }
 
     /* --- KPIs --- */
     var annualAll = career.annual.core.concat(career.annual.ongoing, career.annual.development);
@@ -1027,7 +1055,7 @@
       kpiTile(t('kpiAnnual'),
         annualAll.length ? Math.round(annualDone / annualAll.length * 100) + '%' : '—',
         annualAll.length ? L.fmt.completedOf(annualDone, annualAll.length) : t('noData')),
-      kpiTile(t('kpiPlan'),
+      !settings.showPlan ? null : kpiTile(t('kpiPlan'),
         planTotal ? Math.round(planDone / planTotal * 100) + '%' : '—',
         planTotal ? L.fmt.completedOf(planDone, planTotal) : t('noData')),
       kpiTile(t('kpiWeek'),
@@ -1073,13 +1101,15 @@
     });
     body.appendChild(dashCard(t('cardAnnualByPriority'), prCard));
 
-    /* --- تقدم 30/60/90 --- */
-    var phCard = el('div', {});
-    PLAN_PHASES.forEach(function (ph) {
-      var stat = planPhaseStats(career.plan[ph.key]);
-      phCard.appendChild(meterRow(t(ph.titleKey).split(':')[0], stat.done, stat.total));
-    });
-    body.appendChild(dashCard(t('cardPlanPhases'), phCard));
+    /* --- تقدم 30/60/90 (إن كانت الصفحة مفعّلة) --- */
+    if (settings.showPlan) {
+      var phCard = el('div', {});
+      PLAN_PHASES.forEach(function (ph) {
+        var stat = planPhaseStats(career.plan[ph.key]);
+        phCard.appendChild(meterRow(t(ph.titleKey).split(':')[0], stat.done, stat.total));
+      });
+      body.appendChild(dashCard(t('cardPlanPhases'), phCard));
+    }
 
     /* --- الإنجازات الشهرية خلال السنة --- */
     var year = new Date().getFullYear();
@@ -1124,6 +1154,8 @@
     }
     body.appendChild(dashCard(t('cardPromoReadiness'), promoWrap));
 
+    body.appendChild(settingsCard());
+
     /* حذف البيانات التجريبية */
     if (localStorage.getItem(DEMO_KEY)) {
       var clearBtn = el('button', { class: 'btn-ghost btn-danger', text: t('clearDemo') });
@@ -1136,6 +1168,28 @@
       });
       body.appendChild(clearBtn);
     }
+  }
+
+  function settingsCard() {
+    var toggle = el('input', { type: 'checkbox', class: 'switch-input', id: 'toggle-plan' });
+    toggle.checked = settings.showPlan;
+    toggle.addEventListener('change', function () {
+      setPlanVisible(toggle.checked);
+      renderDashboard();
+    });
+    return el('section', { class: 'card settings-card' }, [
+      el('h2', { class: 'card-title', text: t('settingsTitle') }),
+      el('div', { class: 'setting-row' }, [
+        el('label', { class: 'switch', for: 'toggle-plan' }, [
+          toggle,
+          el('span', { class: 'switch-track' })
+        ]),
+        el('div', { class: 'setting-text' }, [
+          el('label', { class: 'setting-label', for: 'toggle-plan', text: t('togglePlanLabel') }),
+          el('p', { class: 'setting-hint', text: t('togglePlanHint') })
+        ])
+      ])
+    ]);
   }
 
   function kpiTile(label, value, sub) {
@@ -1294,6 +1348,7 @@
     Object.keys(ROUTES).forEach(function (key) {
       if (hash.indexOf(key) !== -1) page = key;
     });
+    if (page === 'plan' && !settings.showPlan) page = 'dashboard';
 
     Object.keys(ROUTES).forEach(function (key) {
       document.getElementById('view-' + key).hidden = key !== page;
@@ -1310,7 +1365,13 @@
     bindPromoField(id, ['currentJob', 'futureJob', 'targetDate'][i]);
   });
 
+  document.getElementById('plan-hide').addEventListener('click', function () {
+    setPlanVisible(false);
+    location.hash = '#/dashboard';
+  });
+
   window.addEventListener('hashchange', route);
   applyLanguage();
+  applyPlanVisibility();
   route();
 })();
