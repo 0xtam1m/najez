@@ -1,33 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <style>
-    /* الوضع الفاتح: خلفية فاتحة وصاروخ أزرق */
-    .bg     { fill: #eff1f5; }
-    .fin    { fill: #bcc0cc; }
-    .nozzle { fill: #9ca0b0; }
-    .win    { fill: #eff1f5; stroke: #1e66f5; }
-    .flame  { fill: #04a5e5; }
-    /* الوضع الداكن: خلفية داكنة وصاروخ متوهج */
-    @media (prefers-color-scheme: dark) {
-      .bg     { fill: #11111b; }
-      .fin    { fill: #45475a; }
-      .nozzle { fill: #313244; }
-      .win    { fill: #11111b; stroke: #89dceb; }
-      .flame  { fill: #89dceb; }
-    }
-  </style>
+  <!-- النسخة الداكنة المتوهجة — ثابتة في كل الأوضاع -->
   <defs>
     <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#89b4fa"/>
       <stop offset="1" stop-color="#1e66f5"/>
     </linearGradient>
   </defs>
-  <rect class="bg" width="512" height="512" rx="116"/>
+  <rect width="512" height="512" rx="116" fill="#11111b"/>
   <g transform="rotate(45 256 236)">
-    <path class="flame" d="M256,352 C274,372 272,398 256,428 C240,398 238,372 256,352 Z"/>
-    <path class="fin" d="M221,246 L166,344 L221,318 Z"/>
-    <path class="fin" d="M291,246 L346,344 L291,318 Z"/>
-    <path class="nozzle" d="M234,318 L278,318 L270,346 L242,346 Z"/>
+    <path d="M256,352 C274,372 272,398 256,428 C240,398 238,372 256,352 Z" fill="#89dceb"/>
+    <path d="M221,246 L166,344 L221,318 Z" fill="#45475a"/>
+    <path d="M291,246 L346,344 L291,318 Z" fill="#45475a"/>
+    <path d="M234,318 L278,318 L270,346 L242,346 Z" fill="#313244"/>
     <path d="M256,84 C295,130 305,200 293,318 L219,318 C207,200 217,130 256,84 Z" fill="url(#body)"/>
-    <circle class="win" cx="256" cy="198" r="32" stroke-width="10"/>
+    <circle cx="256" cy="198" r="32" fill="#11111b" stroke="#89dceb" stroke-width="10"/>
   </g>
 </svg>
