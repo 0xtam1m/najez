@@ -4,7 +4,6 @@
 
   var STORAGE_KEY = 'najez.career';
   var DEMO_KEY = 'najez.career.demo';
-  var LANG_KEY = 'najez.lang';
   var SETTINGS_KEY = 'najez.settings';
 
   /* ===== الإعدادات ===== */
@@ -31,34 +30,140 @@
     applyPlanVisibility();
   }
 
-  /* ===== اللغة ===== */
-  var lang = localStorage.getItem(LANG_KEY);
-  if (lang !== 'ar' && lang !== 'en') lang = 'ar';
-  var L, dateFmt, monthDayFmt;
+  /* ===== Strings (English-only) ===== */
+  var L = {
+    dir: 'ltr',
+    locale: 'en',
+    months: ['January', 'February', 'March', 'April', 'May', 'June',
+             'July', 'August', 'September', 'October', 'November', 'December'],
+    monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    strings: {
+      add: 'Add',
+      save: 'Save',
+      cancel: 'Cancel',
+      edit: 'Edit',
+      delete: 'Delete',
+      emptyList: 'No items yet',
+      statusTodo: 'Not started',
+      statusDoing: 'In progress',
+      statusDone: 'Done',
+      priorityHigh: 'High',
+      priorityMedium: 'Medium',
+      priorityLow: 'Low',
+      sizeSmall: 'Small',
+      sizeMedium: 'Medium',
+      sizeLarge: 'Large',
+      priorityLabel: 'Priority',
+      sizeLabel: 'Size',
+
+      confirmClear: 'This will delete all stored career data. Are you sure?',
+      kpiAnnual: 'Annual goals',
+      kpiPlan: '30/60/90 plan',
+      kpiWeek: 'This week',
+      kpiPromotion: 'Days to promotion',
+      kpiNoTarget: 'Set a target date',
+      cardWeeklyTrend: 'Recent weeks completion rate',
+      cardAnnualByPriority: 'Annual goals by priority',
+      cardPlanPhases: '30/60/90 plan progress',
+      cardMonthlyWins: 'Monthly accomplishments this year',
+      cardPromoReadiness: 'Promotion readiness',
+      selfAvg: 'Average self-assessment',
+      evidenceExamples: 'Documented work examples',
+      evidenceFeedback: 'Feedback received',
+      respCovered: 'Core responsibilities',
+      pctDone: 'completion',
+      weekShort: 'Week',
+      noData: 'No data',
+      clearDemo: 'Delete demo data',
+
+      settingsTitle: 'Settings',
+      togglePlanLabel: '30/60/90 plan page',
+      togglePlanHint: 'Hide it if you are not starting a new role — its data stays saved and you can bring it back anytime.',
+
+      annCore: 'Core Role-Related Projects',
+      annOngoing: 'Ongoing / Cyclical Responsibilities',
+      annDev: 'Development Goals',
+      fTask: 'Task',
+      fDeadline: 'Deadline',
+      fDeliverable: 'Expected deliverable',
+      fStakeholders: 'Stakeholders',
+      fValueAdd: 'Value-add',
+      fNotes: 'Notes',
+      addTask: 'Add task',
+      phTask: 'e.g. Own the monthly forecasting process',
+      phDeadline: 'e.g. Q3 or 2026-09',
+      phDeliverable: 'Quantifiable, measurable output',
+      phValueAdd: 'Capability or skill demonstrated',
+
+      phase30: 'First 30 days: Education + Integration',
+      phase30Desc: 'Understand the company and your role, and start building relationships with the team and stakeholders.',
+      phase60: 'First 60 days: Contribution + Execution',
+      phase60Desc: 'Deepen your knowledge and start executing key projects and delivering tangible results.',
+      phase90: 'First 90 days: Leading + Strategizing',
+      phase90Desc: 'Lead initiatives, increase efficiency, document your results, and think strategically.',
+      fGoal: 'Goal',
+      fMetric: 'Metric for success',
+      addGoal: 'Add goal',
+      addSubtask: 'Add a subtask…',
+      tasksLabel: 'Tasks required',
+      phGoal: 'e.g. Build relationships with the team',
+      phMetric: 'e.g. One-on-one with every key member',
+
+      weekOf: 'Week of',
+      secTodo: 'Weekly to-dos',
+      secFollowups: 'Follow-ups',
+      secUnplanned: 'Unplanned asks',
+      secWins: 'Weekly accomplishments',
+      fStatus: 'Status',
+      fStakeholder: 'Stakeholder',
+      phWeeklyTask: 'Write a task for this week…',
+      phFollowup: 'Something to follow up on…',
+      phUnplanned: 'An unplanned ask that came in…',
+      phWin: 'Something you accomplished this week…',
+
+      secAccomp: 'Top 3–5 accomplishments',
+      secFeedbackM: 'Feedback I received',
+      secProjects: 'New or ongoing projects',
+      secNextGoals: 'Goals for next month',
+      fValueAlign: 'Value-add / goal alignment',
+      fHowApply: 'How I will apply this feedback',
+      phAccomp: 'A big accomplishment this month…',
+      phFeedbackM: 'Positive or constructive feedback…',
+      phProject: 'A project you are working on…',
+      phNextGoal: 'A goal for next month…',
+
+      addResp: 'Add core responsibility',
+      phResp: 'e.g. Oversee end-to-end monthly forecasting',
+      secActions: 'Tangible actions of the target role',
+      secExamples: 'Examples of my work that align',
+      secFeedbackP: 'Feedback from manager & coworkers',
+      fProvider: 'Name / title',
+      fFeedback: 'Feedback',
+      fSelf: 'Self-assessment',
+      phAction: 'What does the target role holder do?',
+      phExample: 'Work you did that proves it…',
+      phProvider: 'e.g. Sarah — direct manager',
+      phFeedbackP: 'What they said…',
+      selfNone: 'Not rated',
+      self1: '1 — Just starting',
+      self2: '2 — Learning',
+      self3: '3 — Delivering independently',
+      self4: '4 — Mastering & helping others',
+      self5: '5 — Ready for the next role'
+    },
+    fmt: {
+      completedOf: function (done, total) { return done + ' of ' + total + ' completed'; },
+      goalsCount: function (n) { return n === 1 ? '1 goal' : n + ' goals'; },
+      daysLeft: function (n) { return n === 1 ? '1 day' : n + ' days'; },
+      itemsCount: function (n) { return n === 1 ? '1 item' : n + ' items'; }
+    }
+  };
+
+  var dateFmt = new Intl.DateTimeFormat(L.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var monthDayFmt = new Intl.DateTimeFormat(L.locale, { day: 'numeric', month: 'long', year: 'numeric' });
 
   function t(key) { return L.strings[key]; }
-
-  function applyLanguage() {
-    L = NAJEZ_I18N[lang];
-    dateFmt = new Intl.DateTimeFormat(L.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    monthDayFmt = new Intl.DateTimeFormat(L.locale, { day: 'numeric', month: 'long', year: 'numeric' });
-
-    document.documentElement.lang = L.htmlLang;
-    document.documentElement.dir = L.dir;
-    document.title = L.title;
-
-    document.querySelectorAll('[data-i18n]').forEach(function (node) {
-      node.textContent = t(node.dataset.i18n);
-    });
-    document.getElementById('lang-toggle').textContent = t('langButton');
-  }
-
-  document.getElementById('lang-toggle').addEventListener('click', function () {
-    lang = lang === 'ar' ? 'en' : 'ar';
-    localStorage.setItem(LANG_KEY, lang);
-    applyLanguage();
-    route();
-  });
 
   /* ===== التخزين ===== */
   function emptyCareer() {
@@ -1223,18 +1328,14 @@
   });
 
   function seedDemo() {
-    var ar = lang === 'ar';
     var seed = 42;
     function rand() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
     function pick(arr) { return arr[Math.floor(rand() * arr.length)]; }
 
-    var annualTasks = ar
-      ? ['قيادة عملية التنبؤ الشهري', 'أتمتة تقرير المبيعات الأسبوعي', 'إطلاق لوحة مؤشرات القسم',
-         'تحسين عملية إقفال نهاية الشهر', 'تدريب موظفَين جدد', 'الحصول على شهادة مهنية',
-         'توثيق إجراءات العمل الأساسية', 'تقليل زمن معالجة الطلبات 20%']
-      : ['Own the monthly forecasting process', 'Automate the weekly sales report', 'Launch the department KPI dashboard',
-         'Improve month-end close process', 'Onboard two new team members', 'Earn a professional certification',
-         'Document core work procedures', 'Cut request processing time by 20%'];
+    var annualTasks =
+      ['Own the monthly forecasting process', 'Automate the weekly sales report', 'Launch the department KPI dashboard',
+       'Improve month-end close process', 'Onboard two new team members', 'Earn a professional certification',
+       'Document core work procedures', 'Cut request processing time by 20%'];
     var priorities = ['high', 'medium', 'low'];
     var sizes = ['small', 'medium', 'large'];
 
@@ -1250,16 +1351,12 @@
       }
     });
 
-    var planGoals = ar
-      ? { p30: [['التعرف على الشركة والاندماج', 'إكمال كل مواد التهيئة'], ['بناء علاقات مع الفريق', 'لقاء فردي مع كل عضو أساسي']],
-          p60: [['تنفيذ مشروع أساسي', 'تسليم مشروع ملموس واحد على الأقل'], ['اقتراح تحسين للعمليات', 'تحديد فرصتي تحسين']],
-          p90: [['قيادة مبادرة جديدة', 'قيادة مشروع أو مبادرة'], ['توثيق النتائج', 'ملف إنجازات محدّث']] }
-      : { p30: [['Learn and integrate', 'Complete all onboarding'], ['Build team relationships', 'One-on-one with every key member']],
-          p60: [['Execute a key project', 'Deliver at least one substantial project'], ['Propose a process improvement', 'Identify two improvement opportunities']],
-          p90: [['Lead a new initiative', 'Lead a project or initiative'], ['Document results', 'An up-to-date wins file']] };
-    var planTasks = ar
-      ? ['مراجعة الوثائق', 'اجتماع مع صاحب المصلحة', 'إعداد مسودة أولى', 'جمع الملاحظات', 'التسليم النهائي']
-      : ['Review documentation', 'Meet the stakeholder', 'Prepare a first draft', 'Collect feedback', 'Final delivery'];
+    var planGoals =
+      { p30: [['Learn and integrate', 'Complete all onboarding'], ['Build team relationships', 'One-on-one with every key member']],
+        p60: [['Execute a key project', 'Deliver at least one substantial project'], ['Propose a process improvement', 'Identify two improvement opportunities']],
+        p90: [['Lead a new initiative', 'Lead a project or initiative'], ['Document results', 'An up-to-date wins file']] };
+    var planTasks =
+      ['Review documentation', 'Meet the stakeholder', 'Prepare a first draft', 'Collect feedback', 'Final delivery'];
     var doneRate = { p30: 1, p60: 0.5, p90: 0.15 };
     Object.keys(planGoals).forEach(function (phKey) {
       planGoals[phKey].forEach(function (g) {
@@ -1271,14 +1368,11 @@
       });
     });
 
-    var weeklyTasks = ar
-      ? ['تحديث تقرير الأداء', 'متابعة طلب العميل', 'مراجعة العرض التقديمي', 'اجتماع الفريق الأسبوعي',
-         'إغلاق تذاكر معلقة', 'تحضير مواد الاجتماع', 'مراجعة الميزانية']
-      : ['Update the performance report', 'Follow up on the client request', 'Review the presentation', 'Weekly team meeting',
-         'Close pending tickets', 'Prepare meeting materials', 'Review the budget'];
-    var winsTexts = ar
-      ? ['أنهيت التقرير قبل الموعد', 'حل مشكلة عميل معقدة', 'قدمت عرضًا ناجحًا', 'أتممت مرحلة من المشروع']
-      : ['Finished the report early', 'Solved a complex client issue', 'Delivered a successful presentation', 'Completed a project phase'];
+    var weeklyTasks =
+      ['Update the performance report', 'Follow up on the client request', 'Review the presentation', 'Weekly team meeting',
+       'Close pending tickets', 'Prepare meeting materials', 'Review the budget'];
+    var winsTexts =
+      ['Finished the report early', 'Solved a complex client issue', 'Delivered a successful presentation', 'Completed a project phase'];
     var start = weekStart(new Date());
     for (var w = 7; w >= 0; w--) {
       var ws = addDays(start, -7 * w);
@@ -1293,13 +1387,12 @@
           valueAdd: ''
         });
       }
-      data.followups.push({ id: uid(), text: pick(weeklyTasks), status: w > 0 ? 'done' : 'doing', stakeholder: ar ? 'المدير المباشر' : 'Direct manager' });
+      data.followups.push({ id: uid(), text: pick(weeklyTasks), status: w > 0 ? 'done' : 'doing', stakeholder: 'Direct manager' });
       if (rand() < 0.7) data.wins.push({ id: uid(), text: pick(winsTexts) });
     }
 
-    var accTexts = ar
-      ? ['إطلاق تقرير آلي وفّر 5 ساعات أسبوعيًا', 'تحقيق هدف الربع قبل الموعد', 'تحسين رضا العملاء 12%', 'إنجاز مشروع التحول الرقمي']
-      : ['Launched an automated report saving 5 hrs/week', 'Hit the quarter goal early', 'Improved customer satisfaction by 12%', 'Delivered the digital transformation project'];
+    var accTexts =
+      ['Launched an automated report saving 5 hrs/week', 'Hit the quarter goal early', 'Improved customer satisfaction by 12%', 'Delivered the digital transformation project'];
     var now = new Date();
     for (var m = 0; m <= now.getMonth(); m++) {
       var mk = now.getFullYear() + '-' + String(m + 1).padStart(2, '0');
@@ -1308,25 +1401,23 @@
       for (var a = 0; a < nAcc; a++) {
         mdata.accomplishments.push({ id: uid(), text: pick(accTexts), extra: '' });
       }
-      mdata.feedback.push({ id: uid(), text: ar ? 'تواصلك مع الفريق ممتاز' : 'Great communication with the team', extra: '' });
+      mdata.feedback.push({ id: uid(), text: 'Great communication with the team', extra: '' });
       mdata.projects.push({ id: uid(), text: pick(accTexts), extra: '' });
       mdata.nextGoals.push({ id: uid(), text: pick(annualTasks), extra: '' });
     }
 
-    career.promotion.currentJob = ar ? 'محلل أول' : 'Senior Analyst';
-    career.promotion.futureJob = ar ? 'قائد فريق' : 'Team Lead';
+    career.promotion.currentJob = 'Senior Analyst';
+    career.promotion.futureJob = 'Team Lead';
     var target = new Date();
     target.setMonth(target.getMonth() + 6);
     career.promotion.targetDate = toDateKey(target);
-    var respTitles = ar
-      ? ['قيادة التخطيط والتنبؤ', 'إدارة أصحاب المصلحة', 'تطوير أعضاء الفريق']
-      : ['Own planning and forecasting', 'Manage stakeholders', 'Develop team members'];
+    var respTitles = ['Own planning and forecasting', 'Manage stakeholders', 'Develop team members'];
     respTitles.forEach(function (title, i) {
       career.promotion.resp.push({
         id: uid(), title: title,
-        actions: [{ id: uid(), text: ar ? 'وضع الخطة الربع سنوية' : 'Set the quarterly plan' }],
+        actions: [{ id: uid(), text: 'Set the quarterly plan' }],
         examples: [{ id: uid(), text: pick(accTexts) }, { id: uid(), text: pick(accTexts) }],
-        feedback: [{ id: uid(), provider: ar ? 'المدير المباشر' : 'Direct manager', text: ar ? 'جاهز لمسؤوليات أكبر' : 'Ready for bigger responsibilities' }],
+        feedback: [{ id: uid(), provider: 'Direct manager', text: 'Ready for bigger responsibilities' }],
         self: 3 + (i % 2)
       });
     });
@@ -1371,7 +1462,6 @@
   });
 
   window.addEventListener('hashchange', route);
-  applyLanguage();
   applyPlanVisibility();
   route();
 })();

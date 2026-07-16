@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
-  <title>ناجز — امتلك مسيرتك المهنية</title>
+  <title>Najez — Own Your Career</title>
   <meta name="theme-color" content="#1e66f5">
   <link rel="icon" href="logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -20,100 +19,99 @@
     <div class="app-header-inner">
       <a class="brand" href="#/dashboard">
         <img src="logo.svg" alt="" class="brand-logo" width="30" height="30">
-        <span data-i18n="brand">ناجز</span>
+        <span>Najez</span>
       </a>
-      <button id="lang-toggle" class="lang-toggle" type="button">English</button>
     </div>
   </header>
 
-  <!-- لوحة المعلومات -->
+  <!-- Dashboard -->
   <main id="view-dashboard" class="view" hidden>
     <div class="page-header">
-      <h1 data-i18n="dashTitle">لوحة المعلومات</h1>
-      <p class="page-hint" data-i18n="dashHint">كل أرقام مسيرتك المهنية في مكان واحد</p>
+      <h1>Dashboard</h1>
+      <p class="page-hint">All your career numbers in one place</p>
     </div>
     <div id="dash-empty" class="dash-empty" hidden>
-      <p data-i18n="emptyDash"></p>
-      <button id="seed-demo" class="btn-ghost" data-i18n="seedDemo">جرّب ببيانات تجريبية</button>
+      <p>No data yet. Fill in the pages (Annual Goals, 30/60/90 Plan, Weekly, Monthly, Promotion) and your numbers will gather here.</p>
+      <button id="seed-demo" class="btn-ghost">Try with demo data</button>
     </div>
     <div id="dash-body"></div>
   </main>
 
-  <!-- الأهداف السنوية -->
+  <!-- Annual Career Goals -->
   <main id="view-annual" class="view" hidden>
     <div class="page-header">
-      <h1 data-i18n="annualTitle">الأهداف السنوية</h1>
-      <p class="page-hint" data-i18n="annualHint"></p>
+      <h1>Annual Career Goals</h1>
+      <p class="page-hint">Everything you want to achieve at work this year, ranked by priority — review monthly and quarterly.</p>
     </div>
     <div id="annual-sections"></div>
   </main>
 
-  <!-- خطة 30/60/90 -->
+  <!-- 30/60/90 Day Plan -->
   <main id="view-plan" class="view" hidden>
     <div class="page-header">
-      <h1 data-i18n="planTitle">خطة 30/60/90 يوم</h1>
-      <p class="page-hint" data-i18n="planHint"></p>
-      <button id="plan-hide" class="btn-ghost btn-sm" data-i18n="hidePageBtn">إخفاء هذه الصفحة</button>
+      <h1>30/60/90 Day Plan</h1>
+      <p class="page-hint">A roadmap for starting a new role — or a quarterly planning tool. Adjust the timeline as you see fit.</p>
+      <button id="plan-hide" class="btn-ghost btn-sm">Hide this page</button>
     </div>
     <div id="plan-phases"></div>
   </main>
 
-  <!-- قائمة الأسبوع -->
+  <!-- Weekly To-Do List -->
   <main id="view-weekly" class="view" hidden>
     <div class="page-header">
-      <h1 data-i18n="weeklyTitle">قائمة الأسبوع</h1>
+      <h1>Weekly To-Do List</h1>
     </div>
     <div class="period-nav">
       <button id="week-prev" class="btn-icon" type="button">‹</button>
       <div class="period-label">
         <span id="week-label"></span>
-        <button id="week-today" class="btn-chip" type="button" data-i18n="thisWeek" hidden>هذا الأسبوع</button>
+        <button id="week-today" class="btn-chip" type="button" hidden>This week</button>
       </div>
       <button id="week-next" class="btn-icon" type="button">›</button>
     </div>
     <div id="weekly-sections"></div>
   </main>
 
-  <!-- الملخص الشهري -->
+  <!-- Monthly Round-Up -->
   <main id="view-monthly" class="view" hidden>
     <div class="page-header">
-      <h1 data-i18n="monthlyTitle">الملخص الشهري</h1>
+      <h1>Monthly Round-Up</h1>
     </div>
     <div class="period-nav">
       <button id="month-prev" class="btn-icon" type="button">‹</button>
       <div class="period-label">
         <span id="month-label"></span>
-        <button id="month-today" class="btn-chip" type="button" data-i18n="thisMonth" hidden>هذا الشهر</button>
+        <button id="month-today" class="btn-chip" type="button" hidden>This month</button>
       </div>
       <button id="month-next" class="btn-icon" type="button">›</button>
     </div>
     <div id="monthly-sections"></div>
   </main>
 
-  <!-- أهداف الترقية -->
+  <!-- Promotion Goals -->
   <main id="view-promotion" class="view" hidden>
     <div class="page-header">
-      <h1 data-i18n="promoTitle">أهداف الترقية</h1>
-      <p class="page-hint" data-i18n="promoHint"></p>
+      <h1>Promotion Goals</h1>
+      <p class="page-hint">Document the evidence that proves you are ready for the next role: its actions, examples of your work, and feedback.</p>
     </div>
     <section class="card promo-header-card">
       <div class="promo-fields">
         <label>
-          <span data-i18n="fCurrentJob">الوظيفة الحالية</span>
+          <span>Current job</span>
           <input id="promo-current" type="text">
         </label>
         <label>
-          <span data-i18n="fFutureJob">الوظيفة المستقبلية</span>
+          <span>Future job</span>
           <input id="promo-future" type="text">
         </label>
         <label>
-          <span data-i18n="fTargetDate">تاريخ الترقية المستهدف</span>
+          <span>Desired promotion date</span>
           <input id="promo-date" type="date">
         </label>
       </div>
     </section>
     <div id="promo-resps"></div>
-    <button id="promo-add-resp" class="btn-primary btn-block" data-i18n="addResp">إضافة مسؤولية جوهرية</button>
+    <button id="promo-add-resp" class="btn-primary btn-block">Add core responsibility</button>
   </main>
 
   <nav class="bottom-nav">
@@ -124,7 +122,7 @@
           <rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>
         </g>
       </svg>
-      <span data-i18n="navDashboard">اللوحة</span>
+      <span>Dashboard</span>
     </a>
     <a href="#/annual" data-route="annual" class="tab">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
@@ -132,7 +130,7 @@
           <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/>
         </g>
       </svg>
-      <span data-i18n="navAnnual">السنوية</span>
+      <span>Annual</span>
     </a>
     <a href="#/plan" data-route="plan" class="tab">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
@@ -141,7 +139,7 @@
           <line x1="4" y1="10" x2="20" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>
         </g>
       </svg>
-      <span data-i18n="navPlan">30/60/90</span>
+      <span>30/60/90</span>
     </a>
     <a href="#/weekly" data-route="weekly" class="tab">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
@@ -150,7 +148,7 @@
           <path d="M5 15 L7 17 L10.5 13.5"/><line x1="13" y1="15" x2="20" y2="15"/>
         </g>
       </svg>
-      <span data-i18n="navWeekly">الأسبوع</span>
+      <span>Weekly</span>
     </a>
     <a href="#/monthly" data-route="monthly" class="tab">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
@@ -158,7 +156,7 @@
           <line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="19" y1="20" x2="19" y2="9"/>
         </g>
       </svg>
-      <span data-i18n="navMonthly">الشهر</span>
+      <span>Monthly</span>
     </a>
     <a href="#/promotion" data-route="promotion" class="tab">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
@@ -166,13 +164,12 @@
           <path d="M4 17 L10 11 L14 15 L20 8"/><path d="M15 8 L20 8 L20 13"/>
         </g>
       </svg>
-      <span data-i18n="navPromotion">الترقية</span>
+      <span>Promotion</span>
     </a>
   </nav>
 
   <div id="tooltip" class="tooltip" role="status" hidden></div>
 
-  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
