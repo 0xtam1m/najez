@@ -8,7 +8,6 @@ A static web app built around the "Own Your Career" template: every sheet of the
 
 - **Dashboard** — every number in one place: completion rates, weekly trend, monthly accomplishments, and promotion readiness.
 - **Annual Career Goals** — core projects, ongoing responsibilities, and development goals; each task has a priority, size, deadline, and value-add.
-- **30/60/90 Day Plan** — three phases for starting a new role (or quarterly planning): goals with success metrics and checkable subtasks. Optional — can be hidden from Settings on the dashboard.
 - **Weekly To-Do List** — to-dos, follow-ups, unplanned asks, and weekly accomplishments, with week navigation and per-item status.
 - **Monthly Round-Up** — top accomplishments, feedback received, ongoing projects, and next-month goals.
 - **Promotion Goals** — current/future job and target date, with documented evidence and a self-assessment per core responsibility.

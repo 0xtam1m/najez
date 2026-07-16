@@ -4,44 +4,6 @@
 
   var STORAGE_KEY = 'najez.career';
   var DEMO_KEY = 'najez.career.demo';
-  var SETTINGS_KEY = 'najez.settings';
-
-  /* ===== Settings ===== */
-  var HIDEABLE_PAGES = [
-    { key: 'annual', label: 'Annual Career Goals', hint: 'Core projects, ongoing responsibilities, and development goals' },
-    { key: 'plan', label: '30/60/90 Day Plan', hint: 'Roadmap for starting a new role or quarterly planning' },
-    { key: 'weekly', label: 'Weekly To-Do List', hint: 'To-dos, follow-ups, unplanned asks, and weekly wins' },
-    { key: 'monthly', label: 'Monthly Round-Up', hint: 'Accomplishments, feedback, projects, and next-month goals' },
-    { key: 'promotion', label: 'Promotion Goals', hint: 'Evidence and self-assessment for your next role' }
-  ];
-
-  var settings = (function () {
-    var def = { hidden: { annual: false, plan: false, weekly: false, monthly: false, promotion: false } };
-    try {
-      var raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
-      if (raw && raw.hidden) {
-        Object.keys(def.hidden).forEach(function (k) { def.hidden[k] = raw.hidden[k] === true; });
-      } else if (raw && raw.showPlan === false) {
-        def.hidden.plan = true; // migrate the old single-page setting
-      }
-    } catch (e) { /* defaults */ }
-    return def;
-  })();
-
-  function saveSettings() {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  }
-
-  function isHidden(page) {
-    return settings.hidden[page] === true;
-  }
-
-  function applyNavVisibility() {
-    Object.keys(settings.hidden).forEach(function (key) {
-      var tab = document.querySelector('.tab[data-route="' + key + '"]');
-      if (tab) tab.hidden = isHidden(key);
-    });
-  }
 
   /* ===== Strings (English-only) ===== */
   var L = {
@@ -72,13 +34,11 @@
 
       confirmClear: 'This will delete all stored career data. Are you sure?',
       kpiAnnual: 'Annual goals',
-      kpiPlan: '30/60/90 plan',
       kpiWeek: 'This week',
       kpiPromotion: 'Days to promotion',
       kpiNoTarget: 'Set a target date',
       cardWeeklyTrend: 'Recent weeks completion rate',
       cardAnnualByPriority: 'Annual goals by priority',
-      cardPlanPhases: '30/60/90 plan progress',
       cardMonthlyWins: 'Monthly accomplishments this year',
       cardPromoReadiness: 'Promotion readiness',
       selfAvg: 'Average self-assessment',
@@ -89,10 +49,6 @@
       weekShort: 'Week',
       noData: 'No data',
       clearDemo: 'Delete demo data',
-
-      settingsTitle: 'Settings',
-      togglePlanLabel: '30/60/90 plan page',
-      togglePlanHint: 'Hide it if you are not starting a new role — its data stays saved and you can bring it back anytime.',
 
       annCore: 'Core Role-Related Projects',
       annOngoing: 'Ongoing / Cyclical Responsibilities',
@@ -108,20 +64,6 @@
       phDeadline: 'e.g. Q3 or 2026-09',
       phDeliverable: 'Quantifiable, measurable output',
       phValueAdd: 'Capability or skill demonstrated',
-
-      phase30: 'First 30 days: Education + Integration',
-      phase30Desc: 'Understand the company and your role, and start building relationships with the team and stakeholders.',
-      phase60: 'First 60 days: Contribution + Execution',
-      phase60Desc: 'Deepen your knowledge and start executing key projects and delivering tangible results.',
-      phase90: 'First 90 days: Leading + Strategizing',
-      phase90Desc: 'Lead initiatives, increase efficiency, document your results, and think strategically.',
-      fGoal: 'Goal',
-      fMetric: 'Metric for success',
-      addGoal: 'Add goal',
-      addSubtask: 'Add a subtask…',
-      tasksLabel: 'Tasks required',
-      phGoal: 'e.g. Build relationships with the team',
-      phMetric: 'e.g. One-on-one with every key member',
 
       weekOf: 'Week of',
       secTodo: 'Weekly to-dos',
@@ -215,9 +157,8 @@
   }
 
   function hasAnyData() {
-    var a = career.annual, p = career.plan, pr = career.promotion;
+    var a = career.annual, pr = career.promotion;
     if (a.core.length || a.ongoing.length || a.development.length) return true;
-    if (p.p30.length || p.p60.length || p.p90.length) return true;
     if (Object.keys(career.weekly).some(function (k) {
       var w = career.weekly[k];
       return w.todo.length || w.followups.length || w.unplanned.length || w.wins.length;
@@ -633,135 +574,6 @@
   }
 
   /* =====================================================================
-     صفحة: خطة 30/60/90
-  ===================================================================== */
-  var PLAN_PHASES = [
-    { key: 'p30', titleKey: 'phase30', descKey: 'phase30Desc' },
-    { key: 'p60', titleKey: 'phase60', descKey: 'phase60Desc' },
-    { key: 'p90', titleKey: 'phase90', descKey: 'phase90Desc' }
-  ];
-
-  function goalFields() {
-    return [
-      { key: 'title', label: t('fGoal'), ph: t('phGoal') },
-      { key: 'metric', label: t('fMetric'), ph: t('phMetric'), wide: true },
-      { key: 'notes', label: t('fNotes'), wide: true }
-    ];
-  }
-
-  function renderPlan() {
-    var container = document.getElementById('plan-phases');
-    container.textContent = '';
-
-    PLAN_PHASES.forEach(function (phase) {
-      var goals = career.plan[phase.key];
-      var card = el('section', { class: 'card' });
-      var stats = planPhaseStats(goals);
-      card.appendChild(el('div', { class: 'card-head' }, [
-        el('h2', { class: 'card-title', text: t(phase.titleKey) }),
-        el('span', { class: 'card-count', text: stats.total ? stats.done + '/' + stats.total : '' })
-      ]));
-      card.appendChild(el('p', { class: 'card-desc', text: t(phase.descKey) }));
-
-      var list = el('div', { class: 'entry-list' });
-      if (!goals.length) list.appendChild(emptyHint());
-      goals.forEach(function (goal, idx) {
-        list.appendChild(goalCard(phase.key, goal, idx));
-      });
-      card.appendChild(list);
-
-      card.appendChild(el('details', { class: 'add-details' }, [
-        el('summary', { text: '+ ' + t('addGoal') }),
-        buildForm(goalFields(), {}, t('add'), function (values) {
-          values.id = uid();
-          values.tasks = [];
-          career.plan[phase.key].push(values);
-          save();
-          renderPlan();
-        })
-      ]));
-      container.appendChild(card);
-    });
-  }
-
-  function planPhaseStats(goals) {
-    var done = 0, total = 0;
-    goals.forEach(function (g) {
-      (g.tasks || []).forEach(function (task) {
-        total++;
-        if (task.done) done++;
-      });
-    });
-    return { done: done, total: total };
-  }
-
-  function goalCard(phaseKey, goal, idx) {
-    var wrap = el('div', { class: 'entry-item' });
-
-    function startEdit() {
-      var form = buildForm(goalFields(), goal, t('save'), function (values) {
-        Object.keys(values).forEach(function (k) { goal[k] = values[k]; });
-        save();
-        renderPlan();
-      }, function () { renderPlan(); });
-      wrap.textContent = '';
-      wrap.appendChild(form);
-    }
-
-    wrap.appendChild(el('div', { class: 'entry-head' }, [
-      el('span', { class: 'entry-title', text: goal.title }),
-      el('span', { class: 'entry-actions' }, [
-        iconButton('✎', t('edit'), startEdit),
-        iconButton('✕', t('delete'), function () {
-          career.plan[phaseKey].splice(idx, 1);
-          save();
-          renderPlan();
-        }, 'danger')
-      ])
-    ]));
-    if (goal.metric) wrap.appendChild(detailLine(t('fMetric'), goal.metric));
-    if (goal.notes) wrap.appendChild(detailLine(t('fNotes'), goal.notes));
-
-    var tasksWrap = el('div', { class: 'subtasks' });
-    tasksWrap.appendChild(el('p', { class: 'detail-label subtasks-title', text: t('tasksLabel') }));
-    (goal.tasks || []).forEach(function (task, tIdx) {
-      var check = el('input', { type: 'checkbox', class: 'done-check sm' });
-      check.checked = !!task.done;
-      check.addEventListener('change', function () {
-        task.done = check.checked;
-        save();
-        renderPlan();
-      });
-      tasksWrap.appendChild(el('div', { class: 'subtask' + (task.done ? ' is-done' : '') }, [
-        check,
-        el('span', { class: 'subtask-text', text: task.text }),
-        iconButton('✕', t('delete'), function () {
-          goal.tasks.splice(tIdx, 1);
-          save();
-          renderPlan();
-        }, 'danger')
-      ]));
-    });
-
-    var addInput = el('input', { type: 'text', class: 'form-input subtask-input', placeholder: t('addSubtask') });
-    var addForm = el('form', { class: 'subtask-form' }, [addInput,
-      el('button', { type: 'submit', class: 'btn-ghost btn-sm', text: t('add') })]);
-    addForm.addEventListener('submit', function (evt) {
-      evt.preventDefault();
-      var text = addInput.value.trim();
-      if (!text) return;
-      goal.tasks = goal.tasks || [];
-      goal.tasks.push({ id: uid(), text: text, done: false });
-      save();
-      renderPlan();
-    });
-    tasksWrap.appendChild(addForm);
-    wrap.appendChild(tasksWrap);
-
-    return wrap;
-  }
-
-  /* =====================================================================
      صفحة: قائمة الأسبوع
   ===================================================================== */
   var currentWeekStart = weekStart(new Date());
@@ -1149,13 +961,6 @@
     var annualAll = career.annual.core.concat(career.annual.ongoing, career.annual.development);
     var annualDone = annualAll.filter(function (i) { return i.done; }).length;
 
-    var planDone = 0, planTotal = 0;
-    PLAN_PHASES.forEach(function (ph) {
-      var stat = planPhaseStats(career.plan[ph.key]);
-      planDone += stat.done;
-      planTotal += stat.total;
-    });
-
     var wk = career.weekly[toDateKey(weekStart(new Date()))] || { todo: [], followups: [], unplanned: [], wins: [] };
     var weekItems = wk.todo.concat(wk.followups, wk.unplanned);
     var weekDone = weekItems.filter(function (i) { return i.status === 'done'; }).length;
@@ -1167,23 +972,20 @@
     }
 
     var kpis = el('section', { class: 'kpi-row' }, [
-      isHidden('annual') ? null : kpiTile(t('kpiAnnual'),
+      kpiTile(t('kpiAnnual'),
         annualAll.length ? Math.round(annualDone / annualAll.length * 100) + '%' : '—',
         annualAll.length ? L.fmt.completedOf(annualDone, annualAll.length) : t('noData')),
-      isHidden('plan') ? null : kpiTile(t('kpiPlan'),
-        planTotal ? Math.round(planDone / planTotal * 100) + '%' : '—',
-        planTotal ? L.fmt.completedOf(planDone, planTotal) : t('noData')),
-      isHidden('weekly') ? null : kpiTile(t('kpiWeek'),
+      kpiTile(t('kpiWeek'),
         weekItems.length ? weekDone + '/' + weekItems.length : '—',
         weekItems.length ? t('pctDone') + ' ' + Math.round(weekDone / weekItems.length * 100) + '%' : t('noData')),
-      isHidden('promotion') ? null : kpiTile(t('kpiPromotion'),
+      kpiTile(t('kpiPromotion'),
         daysToPromo === null ? '—' : String(daysToPromo),
         daysToPromo === null ? t('kpiNoTarget') : monthDayFmt.format(fromDateKey(career.promotion.targetDate)))
     ]);
-    if (kpis.children.length) body.appendChild(kpis);
+    body.appendChild(kpis);
 
     /* --- Recent weeks completion rate --- */
-    if (!isHidden('weekly')) {
+    {
       var weekLabels = [], weekValues = [], weekTips = [];
       var start = weekStart(new Date());
       for (var i = 7; i >= 0; i--) {
@@ -1208,7 +1010,7 @@
     }
 
     /* --- Annual goals by priority --- */
-    if (!isHidden('annual')) {
+    {
       var prCard = el('div', {});
       PRIORITY_OPTIONS().forEach(function (opt) {
         var subset = annualAll.filter(function (item) { return item.priority === opt.value; });
@@ -1218,18 +1020,8 @@
       body.appendChild(dashCard(t('cardAnnualByPriority'), prCard));
     }
 
-    /* --- 30/60/90 plan progress --- */
-    if (!isHidden('plan')) {
-      var phCard = el('div', {});
-      PLAN_PHASES.forEach(function (ph) {
-        var stat = planPhaseStats(career.plan[ph.key]);
-        phCard.appendChild(meterRow(t(ph.titleKey).split(':')[0], stat.done, stat.total));
-      });
-      body.appendChild(dashCard(t('cardPlanPhases'), phCard));
-    }
-
     /* --- Monthly accomplishments this year --- */
-    if (!isHidden('monthly')) {
+    {
       var year = new Date().getFullYear();
       var mLabels = [], mValues = [], mTips = [];
       for (var m = 0; m < 12; m++) {
@@ -1251,7 +1043,7 @@
     }
 
     /* --- Promotion readiness --- */
-    if (!isHidden('promotion')) {
+    {
       var resp = career.promotion.resp;
       var rated = resp.filter(function (r) { return r.self > 0; });
       var avgSelf = rated.length
@@ -1342,23 +1134,6 @@
       }
     });
 
-    var planGoals =
-      { p30: [['Learn and integrate', 'Complete all onboarding'], ['Build team relationships', 'One-on-one with every key member']],
-        p60: [['Execute a key project', 'Deliver at least one substantial project'], ['Propose a process improvement', 'Identify two improvement opportunities']],
-        p90: [['Lead a new initiative', 'Lead a project or initiative'], ['Document results', 'An up-to-date wins file']] };
-    var planTasks =
-      ['Review documentation', 'Meet the stakeholder', 'Prepare a first draft', 'Collect feedback', 'Final delivery'];
-    var doneRate = { p30: 1, p60: 0.5, p90: 0.15 };
-    Object.keys(planGoals).forEach(function (phKey) {
-      planGoals[phKey].forEach(function (g) {
-        var tasks = [];
-        for (var i = 0; i < 3; i++) {
-          tasks.push({ id: uid(), text: pick(planTasks), done: rand() < doneRate[phKey] });
-        }
-        career.plan[phKey].push({ id: uid(), title: g[0], metric: g[1], notes: '', tasks: tasks });
-      });
-    });
-
     var weeklyTasks =
       ['Update the performance report', 'Follow up on the client request', 'Review the presentation', 'Weekly team meeting',
        'Close pending tickets', 'Prepare meeting materials', 'Review the budget'];
@@ -1414,40 +1189,13 @@
     });
   }
 
-  /* ===== Settings page ===== */
-  function renderSettings() {
-    var container = document.getElementById('settings-pages');
-    container.textContent = '';
-    HIDEABLE_PAGES.forEach(function (pg) {
-      var toggle = el('input', { type: 'checkbox', class: 'switch-input', id: 'toggle-' + pg.key });
-      toggle.checked = !isHidden(pg.key);
-      toggle.addEventListener('change', function () {
-        settings.hidden[pg.key] = !toggle.checked;
-        saveSettings();
-        applyNavVisibility();
-      });
-      container.appendChild(el('div', { class: 'setting-row' }, [
-        el('label', { class: 'switch', for: 'toggle-' + pg.key }, [
-          toggle,
-          el('span', { class: 'switch-track' })
-        ]),
-        el('div', { class: 'setting-text' }, [
-          el('label', { class: 'setting-label', for: 'toggle-' + pg.key, text: pg.label }),
-          el('p', { class: 'setting-hint', text: pg.hint })
-        ])
-      ]));
-    });
-  }
-
   /* ===== Routing ===== */
   var ROUTES = {
     dashboard: renderDashboard,
     annual: renderAnnual,
-    plan: renderPlan,
     weekly: renderWeekly,
     monthly: renderMonthly,
-    promotion: renderPromotion,
-    settings: renderSettings
+    promotion: renderPromotion
   };
 
   function route() {
@@ -1456,7 +1204,6 @@
     Object.keys(ROUTES).forEach(function (key) {
       if (hash.indexOf(key) !== -1) page = key;
     });
-    if (isHidden(page)) page = 'dashboard';
 
     Object.keys(ROUTES).forEach(function (key) {
       document.getElementById('view-' + key).hidden = key !== page;
@@ -1474,6 +1221,5 @@
   });
 
   window.addEventListener('hashchange', route);
-  applyNavVisibility();
   route();
 })();
