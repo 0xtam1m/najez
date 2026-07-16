@@ -6,28 +6,41 @@
   var DEMO_KEY = 'najez.career.demo';
   var SETTINGS_KEY = 'najez.settings';
 
-  /* ===== الإعدادات ===== */
+  /* ===== Settings ===== */
+  var HIDEABLE_PAGES = [
+    { key: 'annual', label: 'Annual Career Goals', hint: 'Core projects, ongoing responsibilities, and development goals' },
+    { key: 'plan', label: '30/60/90 Day Plan', hint: 'Roadmap for starting a new role or quarterly planning' },
+    { key: 'weekly', label: 'Weekly To-Do List', hint: 'To-dos, follow-ups, unplanned asks, and weekly wins' },
+    { key: 'monthly', label: 'Monthly Round-Up', hint: 'Accomplishments, feedback, projects, and next-month goals' },
+    { key: 'promotion', label: 'Promotion Goals', hint: 'Evidence and self-assessment for your next role' }
+  ];
+
   var settings = (function () {
+    var def = { hidden: { annual: false, plan: false, weekly: false, monthly: false, promotion: false } };
     try {
       var raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
-      return { showPlan: raw.showPlan !== false };
-    } catch (e) {
-      return { showPlan: true };
-    }
+      if (raw && raw.hidden) {
+        Object.keys(def.hidden).forEach(function (k) { def.hidden[k] = raw.hidden[k] === true; });
+      } else if (raw && raw.showPlan === false) {
+        def.hidden.plan = true; // migrate the old single-page setting
+      }
+    } catch (e) { /* defaults */ }
+    return def;
   })();
 
   function saveSettings() {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   }
 
-  function applyPlanVisibility() {
-    document.querySelector('.tab[data-route="plan"]').hidden = !settings.showPlan;
+  function isHidden(page) {
+    return settings.hidden[page] === true;
   }
 
-  function setPlanVisible(visible) {
-    settings.showPlan = visible;
-    saveSettings();
-    applyPlanVisibility();
+  function applyNavVisibility() {
+    Object.keys(settings.hidden).forEach(function (key) {
+      var tab = document.querySelector('.tab[data-route="' + key + '"]');
+      if (tab) tab.hidden = isHidden(key);
+    });
   }
 
   /* ===== Strings (English-only) ===== */
@@ -1130,10 +1143,7 @@
 
     var hasData = hasAnyData();
     empty.hidden = hasData;
-    if (!hasData) {
-      body.appendChild(settingsCard());
-      return;
-    }
+    if (!hasData) return;
 
     /* --- KPIs --- */
     var annualAll = career.annual.core.concat(career.annual.ongoing, career.annual.development);
@@ -1157,57 +1167,59 @@
     }
 
     var kpis = el('section', { class: 'kpi-row' }, [
-      kpiTile(t('kpiAnnual'),
+      isHidden('annual') ? null : kpiTile(t('kpiAnnual'),
         annualAll.length ? Math.round(annualDone / annualAll.length * 100) + '%' : '—',
         annualAll.length ? L.fmt.completedOf(annualDone, annualAll.length) : t('noData')),
-      !settings.showPlan ? null : kpiTile(t('kpiPlan'),
+      isHidden('plan') ? null : kpiTile(t('kpiPlan'),
         planTotal ? Math.round(planDone / planTotal * 100) + '%' : '—',
         planTotal ? L.fmt.completedOf(planDone, planTotal) : t('noData')),
-      kpiTile(t('kpiWeek'),
+      isHidden('weekly') ? null : kpiTile(t('kpiWeek'),
         weekItems.length ? weekDone + '/' + weekItems.length : '—',
         weekItems.length ? t('pctDone') + ' ' + Math.round(weekDone / weekItems.length * 100) + '%' : t('noData')),
-      kpiTile(t('kpiPromotion'),
+      isHidden('promotion') ? null : kpiTile(t('kpiPromotion'),
         daysToPromo === null ? '—' : String(daysToPromo),
         daysToPromo === null ? t('kpiNoTarget') : monthDayFmt.format(fromDateKey(career.promotion.targetDate)))
     ]);
-    body.appendChild(kpis);
+    if (kpis.children.length) body.appendChild(kpis);
 
-    /* --- نسبة إنجاز الأسابيع الأخيرة --- */
-    var weekLabels = [], weekValues = [], weekTips = [];
-    var start = weekStart(new Date());
-    for (var i = 7; i >= 0; i--) {
-      var ws = addDays(start, -7 * i);
-      var wdata = career.weekly[toDateKey(ws)];
-      var itemsArr = wdata ? wdata.todo.concat(wdata.followups, wdata.unplanned) : [];
-      var doneArr = itemsArr.filter(function (x) { return x.status === 'done'; });
-      var pct = itemsArr.length ? Math.round(doneArr.length / itemsArr.length * 100) : 0;
-      weekLabels.push(L.dir === 'rtl'
-        ? ws.getDate() + '/' + (ws.getMonth() + 1)
-        : (ws.getMonth() + 1) + '/' + ws.getDate());
-      weekValues.push(pct);
-      weekTips.push([
-        t('weekOf') + ' ' + monthDayFmt.format(ws),
-        itemsArr.length ? doneArr.length + '/' + itemsArr.length + ' — ' + pct + '%' : t('noData')
-      ]);
+    /* --- Recent weeks completion rate --- */
+    if (!isHidden('weekly')) {
+      var weekLabels = [], weekValues = [], weekTips = [];
+      var start = weekStart(new Date());
+      for (var i = 7; i >= 0; i--) {
+        var ws = addDays(start, -7 * i);
+        var wdata = career.weekly[toDateKey(ws)];
+        var itemsArr = wdata ? wdata.todo.concat(wdata.followups, wdata.unplanned) : [];
+        var doneArr = itemsArr.filter(function (x) { return x.status === 'done'; });
+        var pct = itemsArr.length ? Math.round(doneArr.length / itemsArr.length * 100) : 0;
+        weekLabels.push((ws.getMonth() + 1) + '/' + ws.getDate());
+        weekValues.push(pct);
+        weekTips.push([
+          t('weekOf') + ' ' + monthDayFmt.format(ws),
+          itemsArr.length ? doneArr.length + '/' + itemsArr.length + ' — ' + pct + '%' : t('noData')
+        ]);
+      }
+      body.appendChild(dashCard(t('cardWeeklyTrend'),
+        renderColumnChart(weekLabels, weekValues, {
+          maxValue: 100,
+          tickFormat: function (v) { return Math.round(v) + '%'; },
+          tooltip: function (idx) { return weekTips[idx]; }
+        })));
     }
-    body.appendChild(dashCard(t('cardWeeklyTrend'),
-      renderColumnChart(weekLabels, weekValues, {
-        maxValue: 100,
-        tickFormat: function (v) { return Math.round(v) + '%'; },
-        tooltip: function (idx) { return weekTips[idx]; }
-      })));
 
-    /* --- الأهداف السنوية حسب الأولوية --- */
-    var prCard = el('div', {});
-    PRIORITY_OPTIONS().forEach(function (opt) {
-      var subset = annualAll.filter(function (item) { return item.priority === opt.value; });
-      var doneCount = subset.filter(function (item) { return item.done; }).length;
-      prCard.appendChild(meterRow(opt.label, doneCount, subset.length));
-    });
-    body.appendChild(dashCard(t('cardAnnualByPriority'), prCard));
+    /* --- Annual goals by priority --- */
+    if (!isHidden('annual')) {
+      var prCard = el('div', {});
+      PRIORITY_OPTIONS().forEach(function (opt) {
+        var subset = annualAll.filter(function (item) { return item.priority === opt.value; });
+        var doneCount = subset.filter(function (item) { return item.done; }).length;
+        prCard.appendChild(meterRow(opt.label, doneCount, subset.length));
+      });
+      body.appendChild(dashCard(t('cardAnnualByPriority'), prCard));
+    }
 
-    /* --- تقدم 30/60/90 (إن كانت الصفحة مفعّلة) --- */
-    if (settings.showPlan) {
+    /* --- 30/60/90 plan progress --- */
+    if (!isHidden('plan')) {
       var phCard = el('div', {});
       PLAN_PHASES.forEach(function (ph) {
         var stat = planPhaseStats(career.plan[ph.key]);
@@ -1216,52 +1228,53 @@
       body.appendChild(dashCard(t('cardPlanPhases'), phCard));
     }
 
-    /* --- الإنجازات الشهرية خلال السنة --- */
-    var year = new Date().getFullYear();
-    var mLabels = [], mValues = [], mTips = [];
-    for (var m = 0; m < 12; m++) {
-      var mk = year + '-' + String(m + 1).padStart(2, '0');
-      var mdata = career.monthly[mk];
-      var count = mdata ? mdata.accomplishments.length : 0;
-      /* أضِف إنجازات الأسابيع الواقعة في الشهر */
-      Object.keys(career.weekly).forEach(function (wkKey) {
-        if (wkKey.slice(0, 7) === mk) count += career.weekly[wkKey].wins.length;
-      });
-      mLabels.push(L.monthsShort[m]);
-      mValues.push(count);
-      mTips.push([L.months[m] + ' ' + year, L.fmt.itemsCount(count)]);
+    /* --- Monthly accomplishments this year --- */
+    if (!isHidden('monthly')) {
+      var year = new Date().getFullYear();
+      var mLabels = [], mValues = [], mTips = [];
+      for (var m = 0; m < 12; m++) {
+        var mk = year + '-' + String(m + 1).padStart(2, '0');
+        var mdata = career.monthly[mk];
+        var count = mdata ? mdata.accomplishments.length : 0;
+        /* include weekly wins that fall inside the month */
+        Object.keys(career.weekly).forEach(function (wkKey) {
+          if (wkKey.slice(0, 7) === mk) count += career.weekly[wkKey].wins.length;
+        });
+        mLabels.push(L.monthsShort[m]);
+        mValues.push(count);
+        mTips.push([L.months[m] + ' ' + year, L.fmt.itemsCount(count)]);
+      }
+      body.appendChild(dashCard(t('cardMonthlyWins'),
+        renderColumnChart(mLabels, mValues, {
+          tooltip: function (idx) { return mTips[idx]; }
+        })));
     }
-    body.appendChild(dashCard(t('cardMonthlyWins'),
-      renderColumnChart(mLabels, mValues, {
-        tooltip: function (idx) { return mTips[idx]; }
-      })));
 
-    /* --- جاهزية الترقية --- */
-    var resp = career.promotion.resp;
-    var rated = resp.filter(function (r) { return r.self > 0; });
-    var avgSelf = rated.length
-      ? rated.reduce(function (sum, r) { return sum + r.self; }, 0) / rated.length
-      : 0;
-    var examplesCount = resp.reduce(function (s, r) { return s + r.examples.length; }, 0);
-    var feedbackCount = resp.reduce(function (s, r) { return s + r.feedback.length; }, 0);
+    /* --- Promotion readiness --- */
+    if (!isHidden('promotion')) {
+      var resp = career.promotion.resp;
+      var rated = resp.filter(function (r) { return r.self > 0; });
+      var avgSelf = rated.length
+        ? rated.reduce(function (sum, r) { return sum + r.self; }, 0) / rated.length
+        : 0;
+      var examplesCount = resp.reduce(function (s, r) { return s + r.examples.length; }, 0);
+      var feedbackCount = resp.reduce(function (s, r) { return s + r.feedback.length; }, 0);
 
-    var promoWrap = el('div', {});
-    promoWrap.appendChild(meterRow(t('selfAvg'), Math.round(avgSelf * 10) / 10, 5));
-    promoWrap.appendChild(el('div', { class: 'promo-stats' }, [
-      promoStat(resp.length, t('respCovered')),
-      promoStat(examplesCount, t('evidenceExamples')),
-      promoStat(feedbackCount, t('evidenceFeedback'))
-    ]));
-    if (career.promotion.currentJob || career.promotion.futureJob) {
-      var arrow = L.dir === 'rtl' ? ' ← ' : ' → ';
-      promoWrap.appendChild(el('p', { class: 'detail-line promo-path', text:
-        (career.promotion.currentJob || '—') + arrow + (career.promotion.futureJob || '—') }));
+      var promoWrap = el('div', {});
+      promoWrap.appendChild(meterRow(t('selfAvg'), Math.round(avgSelf * 10) / 10, 5));
+      promoWrap.appendChild(el('div', { class: 'promo-stats' }, [
+        promoStat(resp.length, t('respCovered')),
+        promoStat(examplesCount, t('evidenceExamples')),
+        promoStat(feedbackCount, t('evidenceFeedback'))
+      ]));
+      if (career.promotion.currentJob || career.promotion.futureJob) {
+        promoWrap.appendChild(el('p', { class: 'detail-line promo-path', text:
+          (career.promotion.currentJob || '—') + ' → ' + (career.promotion.futureJob || '—') }));
+      }
+      body.appendChild(dashCard(t('cardPromoReadiness'), promoWrap));
     }
-    body.appendChild(dashCard(t('cardPromoReadiness'), promoWrap));
 
-    body.appendChild(settingsCard());
-
-    /* حذف البيانات التجريبية */
+    /* Delete demo data */
     if (localStorage.getItem(DEMO_KEY)) {
       var clearBtn = el('button', { class: 'btn-ghost btn-danger', text: t('clearDemo') });
       clearBtn.addEventListener('click', function () {
@@ -1273,28 +1286,6 @@
       });
       body.appendChild(clearBtn);
     }
-  }
-
-  function settingsCard() {
-    var toggle = el('input', { type: 'checkbox', class: 'switch-input', id: 'toggle-plan' });
-    toggle.checked = settings.showPlan;
-    toggle.addEventListener('change', function () {
-      setPlanVisible(toggle.checked);
-      renderDashboard();
-    });
-    return el('section', { class: 'card settings-card' }, [
-      el('h2', { class: 'card-title', text: t('settingsTitle') }),
-      el('div', { class: 'setting-row' }, [
-        el('label', { class: 'switch', for: 'toggle-plan' }, [
-          toggle,
-          el('span', { class: 'switch-track' })
-        ]),
-        el('div', { class: 'setting-text' }, [
-          el('label', { class: 'setting-label', for: 'toggle-plan', text: t('togglePlanLabel') }),
-          el('p', { class: 'setting-hint', text: t('togglePlanHint') })
-        ])
-      ])
-    ]);
   }
 
   function kpiTile(label, value, sub) {
@@ -1423,14 +1414,40 @@
     });
   }
 
-  /* ===== التنقل ===== */
+  /* ===== Settings page ===== */
+  function renderSettings() {
+    var container = document.getElementById('settings-pages');
+    container.textContent = '';
+    HIDEABLE_PAGES.forEach(function (pg) {
+      var toggle = el('input', { type: 'checkbox', class: 'switch-input', id: 'toggle-' + pg.key });
+      toggle.checked = !isHidden(pg.key);
+      toggle.addEventListener('change', function () {
+        settings.hidden[pg.key] = !toggle.checked;
+        saveSettings();
+        applyNavVisibility();
+      });
+      container.appendChild(el('div', { class: 'setting-row' }, [
+        el('label', { class: 'switch', for: 'toggle-' + pg.key }, [
+          toggle,
+          el('span', { class: 'switch-track' })
+        ]),
+        el('div', { class: 'setting-text' }, [
+          el('label', { class: 'setting-label', for: 'toggle-' + pg.key, text: pg.label }),
+          el('p', { class: 'setting-hint', text: pg.hint })
+        ])
+      ]));
+    });
+  }
+
+  /* ===== Routing ===== */
   var ROUTES = {
     dashboard: renderDashboard,
     annual: renderAnnual,
     plan: renderPlan,
     weekly: renderWeekly,
     monthly: renderMonthly,
-    promotion: renderPromotion
+    promotion: renderPromotion,
+    settings: renderSettings
   };
 
   function route() {
@@ -1439,7 +1456,7 @@
     Object.keys(ROUTES).forEach(function (key) {
       if (hash.indexOf(key) !== -1) page = key;
     });
-    if (page === 'plan' && !settings.showPlan) page = 'dashboard';
+    if (isHidden(page)) page = 'dashboard';
 
     Object.keys(ROUTES).forEach(function (key) {
       document.getElementById('view-' + key).hidden = key !== page;
@@ -1456,12 +1473,7 @@
     bindPromoField(id, ['currentJob', 'futureJob', 'targetDate'][i]);
   });
 
-  document.getElementById('plan-hide').addEventListener('click', function () {
-    setPlanVisible(false);
-    location.hash = '#/dashboard';
-  });
-
   window.addEventListener('hashchange', route);
-  applyPlanVisibility();
+  applyNavVisibility();
   route();
 })();

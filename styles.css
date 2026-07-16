@@ -72,6 +72,13 @@ body {
   text-decoration: none;
 }
 .brand-logo { display: block; border-radius: 8px; }
+.header-gear {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
 
 /* ===== شريط التنقل السفلي ===== */
 .bottom-nav {
