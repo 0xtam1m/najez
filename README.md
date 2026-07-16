@@ -1,36 +1,36 @@
-# ناجز — Najez
+# Najez — Own Your Career
 
-Own your career: track your goals, plans, and promotion evidence — all in one place.
+Track your goals, plans, and promotion evidence — all in one place.
 
-تطبيق ويب لإدارة مسيرتك المهنية، مبني على قالب «Own Your Career»: كل صفحة تقابل شيتًا في القالب، وتتجمع كل الأرقام في لوحة معلومات واحدة.
+A static web app built around the "Own Your Career" template: every sheet of the template is a page, and all the numbers gather in one dashboard.
 
-## الصفحات
+## Pages
 
-- **اللوحة** — كل الأرقام في مكان واحد: نسب الإنجاز، اتجاه الأسابيع، الإنجازات الشهرية، وجاهزية الترقية.
-- **الأهداف السنوية** — المشاريع الأساسية، المسؤوليات الدورية، وأهداف التطوير؛ لكل مهمة أولوية وحجم وموعد وقيمة مضافة.
-- **خطة 30/60/90** — ثلاث مراحل لبداية دور جديد (أو تخطيط ربع سنوي): أهداف بمقاييس نجاح ومهام فرعية.
-- **قائمة الأسبوع** — مهام الأسبوع والمتابعات والطلبات غير المخططة وإنجازات الأسبوع، مع تنقل بين الأسابيع.
-- **الملخص الشهري** — أبرز الإنجازات، الملاحظات المستلمة، المشاريع الجارية، وأهداف الشهر القادم.
-- **أهداف الترقية** — وظيفتك الحالية والمستقبلية وتاريخ الترقية المستهدف، مع توثيق الأدلة والتقييم الذاتي لكل مسؤولية جوهرية.
+- **Dashboard** — every number in one place: completion rates, weekly trend, monthly accomplishments, and promotion readiness.
+- **Annual Career Goals** — core projects, ongoing responsibilities, and development goals; each task has a priority, size, deadline, and value-add.
+- **30/60/90 Day Plan** — three phases for starting a new role (or quarterly planning): goals with success metrics and checkable subtasks. Optional — can be hidden from Settings on the dashboard.
+- **Weekly To-Do List** — to-dos, follow-ups, unplanned asks, and weekly accomplishments, with week navigation and per-item status.
+- **Monthly Round-Up** — top accomplishments, feedback received, ongoing projects, and next-month goals.
+- **Promotion Goals** — current/future job and target date, with documented evidence and a self-assessment per core responsibility.
 
-## المزايا
+## Features
 
-- عربي / إنجليزي مع انعكاس كامل للاتجاه (RTL/LTR)
-- وضع فاتح وداكن تلقائي
-- قابل للتثبيت كتطبيق على الجوال (PWA manifest)
-- بيانات تجريبية لمعاينة اللوحة بضغطة زر
+- Catppuccin palette (Latte light / Mocha dark, follows system preference)
+- JetBrains Mono typography
+- Installable as a mobile app (PWA manifest)
+- Demo data seeding to preview the dashboard in one click
 
-## التشغيل
+## Running
 
-التطبيق ثابت بالكامل (HTML/CSS/JS) بدون أي اعتماديات أو خطوة بناء:
+Fully static (HTML/CSS/JS) with no dependencies or build step:
 
 ```bash
 python3 -m http.server 8000
-# ثم افتح http://localhost:8000
+# then open http://localhost:8000
 ```
 
-يُنشر تلقائيًا على GitHub Pages مع كل دمج في `main` (عبر فرع `gh-pages`).
+Deploys automatically to GitHub Pages on every merge to `main` (via the `gh-pages` branch).
 
-## التخزين
+## Storage
 
-تُحفظ البيانات محليًا في متصفحك عبر `localStorage` — لا يوجد خادم ولا تغادر بياناتك جهازك.
+Data is stored locally in your browser via `localStorage` — there is no server and your data never leaves your device.
