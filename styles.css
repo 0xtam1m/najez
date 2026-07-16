@@ -1,34 +1,58 @@
-/* ناجز — الأنماط. ألوان من لوحة مرجعية مُتحقَّق منها (وضع فاتح وداكن) */
+/* ناجز — الأنماط. لوحة ألوان Catppuccin (Latte فاتح / Mocha داكن) */
 
-:root {
-  --page:           #f9f9f7;
-  --surface-1:      #fcfcfb;
-  --text-primary:   #0b0b0b;
-  --text-secondary: #52514e;
-  --text-muted:     #898781;
-  --gridline:       #e1e0d9;
-  --baseline:       #c3c2b7;
-  --border:         rgba(11, 11, 11, 0.10);
-  --accent:         #2a78d6;   /* أزرق تسلسلي — سلسلة واحدة */
-  --accent-hover:   #5598e7;
-  --accent-track:   #cde2fb;   /* مسار العدّادات: درجة أفتح من نفس التدرج */
-  --danger:         #d03b3b;
+/* خط ثمانية — للنص العربي */
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("https://cdn.jsdelivr.net/gh/qaiserwh/thmanyah-font@main/thmanyahsans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("https://cdn.jsdelivr.net/gh/qaiserwh/thmanyah-font@main/thmanyahsans-Medium.otf") format("opentype");
+  font-weight: 500 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("https://cdn.jsdelivr.net/gh/qaiserwh/thmanyah-font@main/thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 700 900;
+  font-display: swap;
 }
 
+/* Catppuccin Latte */
+:root {
+  --page:           #e6e9ef;   /* mantle */
+  --surface-1:      #eff1f5;   /* base */
+  --text-primary:   #4c4f69;   /* text */
+  --text-secondary: #5c5f77;   /* subtext1 */
+  --text-muted:     #8c8fa1;   /* overlay1 */
+  --gridline:       #ccd0da;   /* surface0 */
+  --baseline:       #bcc0cc;   /* surface1 */
+  --border:         rgba(76, 79, 105, 0.12);
+  --accent:         #1e66f5;   /* blue */
+  --accent-hover:   #7287fd;   /* lavender */
+  --accent-track:   rgba(30, 102, 245, 0.18);
+  --on-accent:      #ffffff;
+  --danger:         #d20f39;   /* red */
+}
+
+/* Catppuccin Mocha */
 @media (prefers-color-scheme: dark) {
   :root {
-    --page:           #0d0d0d;
-    --surface-1:      #1a1a19;
-    --text-primary:   #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted:     #898781;
-    --gridline:       #2c2c2a;
-    --baseline:       #383835;
-    --border:         rgba(255, 255, 255, 0.10);
-    --accent:         #3987e5;
-    --accent-hover:   #6da7ec;
-    --accent-track:   #104281;
-    --danger:         #e66767;
+    --page:           #181825;   /* mantle */
+    --surface-1:      #1e1e2e;   /* base */
+    --text-primary:   #cdd6f4;   /* text */
+    --text-secondary: #bac2de;   /* subtext1 */
+    --text-muted:     #9399b2;   /* overlay2 */
+    --gridline:       #313244;   /* surface0 */
+    --baseline:       #45475a;   /* surface1 */
+    --border:         rgba(205, 214, 244, 0.10);
+    --accent:         #89b4fa;   /* blue */
+    --accent-hover:   #b4befe;   /* lavender */
+    --accent-track:   rgba(137, 180, 250, 0.22);
+    --on-accent:      #11111b;   /* crust — نص داكن فوق أزرق فاتح */
+    --danger:         #f38ba8;   /* red */
   }
 }
 
@@ -38,7 +62,8 @@ body {
   margin: 0;
   background: var(--page);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+  /* اللاتينية والأرقام من JetBrains Mono، والعربية تسقط إلى خط ثمانية */
+  font-family: "JetBrains Mono", "Thmanyah Sans", system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
   line-height: 1.6;
 }
 
@@ -292,7 +317,7 @@ body {
   font-size: 15px;
   font-weight: 600;
   padding: 10px 22px;
-  color: #ffffff;
+  color: var(--on-accent);
   background: var(--accent);
   border: none;
   border-radius: 10px;
